@@ -4,6 +4,16 @@
  */
 package com.michell.vendas.vr.views;
 
+import com.michell.vendas.vr.dtos.CustomersDTO;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author michell-bento
@@ -34,9 +44,10 @@ public class RegisterCustomerForm extends javax.swing.JInternalFrame {
         inputCustomerName = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
         inputPurchaseLimit = new javax.swing.JTextField();
-        inputClosingDate = new javax.swing.JFormattedTextField();
         jLabel4 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
+        inputClosingDate = new com.toedter.calendar.JDateChooser();
+        jLabel8 = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
         btnDeleteCustomer = new javax.swing.JButton();
         btnCancelCustomer = new javax.swing.JButton();
@@ -108,6 +119,12 @@ public class RegisterCustomerForm extends javax.swing.JInternalFrame {
         jLabel6.setFont(new java.awt.Font("Liberation Sans", 0, 15)); // NOI18N
         jLabel6.setText("Código");
 
+        inputClosingDate.setDateFormatString("dd/MM/yyyy");
+
+        jLabel8.setFont(new java.awt.Font("Liberation Sans", 2, 14)); // NOI18N
+        jLabel8.setForeground(new java.awt.Color(102, 102, 102));
+        jLabel8.setText("(dd/MM/yyy)");
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -115,22 +132,22 @@ public class RegisterCustomerForm extends javax.swing.JInternalFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(inputCustomerName)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                             .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, 134, Short.MAX_VALUE)
                             .addComponent(inputPurchaseLimit))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(inputClosingDate)
-                            .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, 256, Short.MAX_VALUE)))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(inputCode, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel2)
-                            .addComponent(jLabel6))
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addContainerGap())
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(inputClosingDate, javax.swing.GroupLayout.PREFERRED_SIZE, 269, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(jLabel2)
+                    .addComponent(jLabel6)
+                    .addComponent(inputCode, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(inputCustomerName, javax.swing.GroupLayout.PREFERRED_SIZE, 409, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -140,18 +157,20 @@ public class RegisterCustomerForm extends javax.swing.JInternalFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(inputCode, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel2)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(inputCustomerName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel3)
-                    .addComponent(jLabel4))
-                .addGap(6, 6, 6)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(inputPurchaseLimit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(inputClosingDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(22, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(inputCustomerName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel3)
+                            .addComponent(jLabel4)
+                            .addComponent(jLabel8))
+                        .addGap(6, 6, 6)
+                        .addComponent(inputPurchaseLimit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(inputClosingDate, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         jPanel3.setBorder(javax.swing.BorderFactory.createEtchedBorder());
@@ -177,6 +196,11 @@ public class RegisterCustomerForm extends javax.swing.JInternalFrame {
         btnSaveClient.setFont(new java.awt.Font("Liberation Sans", 1, 15)); // NOI18N
         btnSaveClient.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/save-icon-3d-vr.png"))); // NOI18N
         btnSaveClient.setText("Salvar");
+        btnSaveClient.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSaveClientActionPerformed(evt);
+            }
+        });
 
         btnNewCustomer.setBackground(new java.awt.Color(255, 153, 0));
         btnNewCustomer.setFont(new java.awt.Font("Liberation Sans", 1, 24)); // NOI18N
@@ -256,21 +280,7 @@ public class RegisterCustomerForm extends javax.swing.JInternalFrame {
 
         tableCustomer.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+
             },
             new String [] {
                 "Código", "Nome do cliente", "Limite de compra", "Data de fechamento"
@@ -321,7 +331,7 @@ public class RegisterCustomerForm extends javax.swing.JInternalFrame {
                     .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -347,11 +357,28 @@ public class RegisterCustomerForm extends javax.swing.JInternalFrame {
 
     private void inputCustomerNameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_inputCustomerNameActionPerformed
         // TODO add your handling code here:
+        
     }//GEN-LAST:event_inputCustomerNameActionPerformed
 
     private void inputCodeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_inputCodeActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_inputCodeActionPerformed
+
+    private void btnSaveClientActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveClientActionPerformed
+        
+        Date date = inputClosingDate.getDate();
+        Instant instant = date.toInstant();
+        LocalDate closingDateAt = instant.atZone(ZoneId.systemDefault()).toLocalDate();
+        
+        DefaultTableModel tableModelCustomers = (DefaultTableModel) tableCustomer.getModel();
+        CustomersDTO customersDto = new CustomersDTO(Long.parseLong(inputCode.getText()), inputCustomerName.getText(), Integer.parseInt(inputPurchaseLimit.getText()), closingDateAt);
+        tableModelCustomers.addRow(new Object[]{
+                        customersDto.getCode(),
+                        customersDto.getCustomerName(),
+                        customersDto.getPurchaseLimit(),
+                        customersDto.getClosingDateAt()
+                });
+    }//GEN-LAST:event_btnSaveClientActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -360,7 +387,7 @@ public class RegisterCustomerForm extends javax.swing.JInternalFrame {
     private javax.swing.JButton btnNewCustomer;
     private javax.swing.JButton btnSaveClient;
     private javax.swing.JButton btnUpdateCustomer;
-    private javax.swing.JFormattedTextField inputClosingDate;
+    private com.toedter.calendar.JDateChooser inputClosingDate;
     private javax.swing.JTextField inputCode;
     private javax.swing.JTextField inputCustomerName;
     private javax.swing.JTextField inputPurchaseLimit;
@@ -372,6 +399,7 @@ public class RegisterCustomerForm extends javax.swing.JInternalFrame {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;

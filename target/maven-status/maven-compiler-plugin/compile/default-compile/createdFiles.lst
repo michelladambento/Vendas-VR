@@ -5,6 +5,8 @@ com/michell/vendas/vr/views/RegisterCustomerForm$1.class
 com/michell/vendas/vr/views/VendasMainForm$2.class
 com/michell/vendas/vr/VendasVR.class
 com/michell/vendas/vr/views/VendasMainForm$4.class
+com/michell/vendas/vr/views/RegisterCustomerForm$4.class
+com/michell/vendas/vr/dtos/CustomersDTO.class
 com/michell/vendas/vr/views/VendasMainForm$1.class
 com/michell/vendas/vr/views/RegisterProductForm.class
 com/michell/vendas/vr/views/VendasMainForm$3.class
