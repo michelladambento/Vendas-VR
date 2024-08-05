@@ -22,11 +22,11 @@ import lombok.Setter;
 @NoArgsConstructor
 public class CustomersDTO {
     
-    private Long code;
+    private Long id;
     
     private String customerName;
     
-    private Integer purchaseLimit;
+    private Double purchaseLimit;
     
     private LocalDate closingDateAt;   
     

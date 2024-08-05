@@ -64,7 +64,6 @@ public class VendasMainForm extends javax.swing.JFrame {
 
         jMenuBar1.setPreferredSize(new java.awt.Dimension(103, 55));
 
-        jMenu1.setForeground(new java.awt.Color(255, 153, 51));
         jMenu1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/vr-icon-32.png"))); // NOI18N
         jMenu1.setText("VR Software - Vendas");
         jMenu1.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
@@ -99,6 +98,11 @@ public class VendasMainForm extends javax.swing.JFrame {
         menuExit.setForeground(new java.awt.Color(255, 153, 0));
         menuExit.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/exit-icon-2.png"))); // NOI18N
         menuExit.setText("Sair");
+        menuExit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuExitActionPerformed(evt);
+            }
+        });
         jMenu1.add(menuExit);
 
         jMenuBar1.add(jMenu1);
@@ -129,7 +133,14 @@ public class VendasMainForm extends javax.swing.JFrame {
         RegisterCustomerForm formCustomer = new RegisterCustomerForm();
         desktopPane.add(formCustomer);
         formCustomer.setVisible(rootPaneCheckingEnabled);
+        
+    
     }//GEN-LAST:event_menuClientActionPerformed
+
+    private void menuExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuExitActionPerformed
+        // TODO add your handling code here:
+        dispose();
+    }//GEN-LAST:event_menuExitActionPerformed
 
     /**
      * @param args the command line arguments
@@ -165,6 +176,8 @@ public class VendasMainForm extends javax.swing.JFrame {
             }
         });
     }
+    
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JDesktopPane desktopPane;
@@ -176,4 +189,5 @@ public class VendasMainForm extends javax.swing.JFrame {
     private javax.swing.JMenuItem menuProduct;
     private javax.swing.JMenuItem menuPurchaseOrder;
     // End of variables declaration//GEN-END:variables
+        
 }

@@ -12,19 +12,112 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestTemplate;
 
 /**
  *
  * @author michell-bento
  */
 public class RegisterCustomerForm extends javax.swing.JInternalFrame {
+    
+     private static final String CUSTOMER_URL = "http://localhost:8080/customer/";
 
     /**
      * Creates new form RegisterCustomerForm
      */
     public RegisterCustomerForm() {
         initComponents();
+        loadCustomers();        
+    }
+    
+    public void clearFields(){
+        inputCode.setText(null);
+        inputCustomerName.setText(null);
+        inputPurchaseLimit.setText(null);
+        inputClosingDate.cleanup();
+        tableCustomer.clearSelection();
+    }
+    
+    public void setInitNewFields(){
+        inputCode.setEnabled(true);
+        inputCustomerName.setEnabled(true);
+        inputPurchaseLimit.setEnabled(true);
+        inputClosingDate.setEnabled(true);
+        inputSearchCostumer.setEnabled(true);
+
+        btnDeleteCustomer.setEnabled(false);
+        btnCancelCustomer.setEnabled(true);
+        btnUpdateCustomer.setEnabled(false);
+        btnSaveClient.setEnabled(true);
+        btnNewCustomer.setEnabled(false);
+    }
+    
+    public void setInitSaveFields(){
+        inputCode.setEnabled(false);
+        inputCustomerName.setEnabled(false);
+        inputPurchaseLimit.setEnabled(false);
+        inputClosingDate.setEnabled(false);
+        inputSearchCostumer.setEnabled(false);
+
+        btnDeleteCustomer.setEnabled(false);
+        btnCancelCustomer.setEnabled(false);
+        btnUpdateCustomer.setEnabled(false);
+        btnSaveClient.setEnabled(false);
+        btnNewCustomer.setEnabled(true);  
+        
+    }
+    
+    public void setInitEditFields(){
+        inputCode.setEnabled(true);
+        inputCustomerName.setEnabled(true);
+        inputPurchaseLimit.setEnabled(true);
+        inputClosingDate.setEnabled(true);
+        inputSearchCostumer.setEnabled(true);
+        
+        btnDeleteCustomer.setEnabled(true);
+        btnCancelCustomer.setEnabled(true);
+        btnUpdateCustomer.setEnabled(true);
+        btnSaveClient.setEnabled(false);
+        btnNewCustomer.setEnabled(false);
+    }
+     
+    public void setInitCancelFields(){
+         setInitSaveFields();
+     }
+    
+    public void loadCustomers(){
+        RestTemplate restTemplate = new RestTemplate();
+
+        // Faz a requisição para a API e converte a resposta para uma lista de CustomersDTO
+        List<CustomersDTO> customersList = restTemplate.exchange(
+            CUSTOMER_URL,
+            HttpMethod.GET,
+            null,
+            new ParameterizedTypeReference<List<CustomersDTO>>() {}
+        ).getBody();
+
+        // Exibe o resultado para verificar
+        if (customersList != null || !customersList.isEmpty()) {
+                DefaultTableModel tableModelCustomers = (DefaultTableModel) tableCustomer.getModel();
+                tableModelCustomers.setRowCount(0); //limpa os dados
+                for (CustomersDTO customer : customersList) {
+                    Long id = customer.getId();
+                    String customerName = customer.getCustomerName();
+                    LocalDate closingDate = customer.getClosingDateAt();
+                    Double purchaseLimit = customer.getPurchaseLimit();
+                    tableModelCustomers.addRow(new Object[]{id, customerName,purchaseLimit,closingDate});
+                }
+           
+        } 
     }
 
     /**
@@ -95,6 +188,7 @@ public class RegisterCustomerForm extends javax.swing.JInternalFrame {
 
         jPanel1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
+        inputCode.setEnabled(false);
         inputCode.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 inputCodeActionPerformed(evt);
@@ -104,6 +198,7 @@ public class RegisterCustomerForm extends javax.swing.JInternalFrame {
         jLabel2.setFont(new java.awt.Font("Liberation Sans", 0, 15)); // NOI18N
         jLabel2.setText("Nome do cliente");
 
+        inputCustomerName.setEnabled(false);
         inputCustomerName.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 inputCustomerNameActionPerformed(evt);
@@ -113,6 +208,8 @@ public class RegisterCustomerForm extends javax.swing.JInternalFrame {
         jLabel3.setFont(new java.awt.Font("Liberation Sans", 0, 15)); // NOI18N
         jLabel3.setText("Limite de compra");
 
+        inputPurchaseLimit.setEnabled(false);
+
         jLabel4.setFont(new java.awt.Font("Liberation Sans", 0, 15)); // NOI18N
         jLabel4.setText("Data de fechamento");
 
@@ -120,10 +217,11 @@ public class RegisterCustomerForm extends javax.swing.JInternalFrame {
         jLabel6.setText("Código");
 
         inputClosingDate.setDateFormatString("dd/MM/yyyy");
+        inputClosingDate.setEnabled(false);
 
         jLabel8.setFont(new java.awt.Font("Liberation Sans", 2, 14)); // NOI18N
         jLabel8.setForeground(new java.awt.Color(102, 102, 102));
-        jLabel8.setText("(dd/MM/yyy)");
+        jLabel8.setText("(dd/MM/yyyy)");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -180,22 +278,39 @@ public class RegisterCustomerForm extends javax.swing.JInternalFrame {
         btnDeleteCustomer.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/trash-icon-vr.png"))); // NOI18N
         btnDeleteCustomer.setText("Excluir");
         btnDeleteCustomer.setEnabled(false);
+        btnDeleteCustomer.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDeleteCustomerActionPerformed(evt);
+            }
+        });
 
         btnCancelCustomer.setBackground(new java.awt.Color(255, 153, 102));
         btnCancelCustomer.setFont(new java.awt.Font("Liberation Sans", 1, 15)); // NOI18N
         btnCancelCustomer.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/clear-icon-vr.png"))); // NOI18N
         btnCancelCustomer.setText("Cancelar");
+        btnCancelCustomer.setEnabled(false);
+        btnCancelCustomer.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCancelCustomerActionPerformed(evt);
+            }
+        });
 
         btnUpdateCustomer.setBackground(new java.awt.Color(255, 153, 102));
         btnUpdateCustomer.setFont(new java.awt.Font("Liberation Sans", 1, 15)); // NOI18N
         btnUpdateCustomer.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/pencil-icon-vr.png"))); // NOI18N
         btnUpdateCustomer.setText("Atualizar");
         btnUpdateCustomer.setEnabled(false);
+        btnUpdateCustomer.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnUpdateCustomerActionPerformed(evt);
+            }
+        });
 
         btnSaveClient.setBackground(new java.awt.Color(255, 153, 0));
         btnSaveClient.setFont(new java.awt.Font("Liberation Sans", 1, 15)); // NOI18N
         btnSaveClient.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/save-icon-3d-vr.png"))); // NOI18N
         btnSaveClient.setText("Salvar");
+        btnSaveClient.setEnabled(false);
         btnSaveClient.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnSaveClientActionPerformed(evt);
@@ -207,6 +322,11 @@ public class RegisterCustomerForm extends javax.swing.JInternalFrame {
         btnNewCustomer.setForeground(new java.awt.Color(255, 255, 255));
         btnNewCustomer.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/plus-icon-vr.png"))); // NOI18N
         btnNewCustomer.setText("NOVO");
+        btnNewCustomer.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnNewCustomerActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -246,6 +366,8 @@ public class RegisterCustomerForm extends javax.swing.JInternalFrame {
 
         jLabel1.setFont(new java.awt.Font("Liberation Sans", 0, 15)); // NOI18N
         jLabel1.setText("Pesquisa pelo nome do cliente");
+
+        inputSearchCostumer.setEnabled(false);
 
         jLabel7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/search-icon-vr.png"))); // NOI18N
 
@@ -287,7 +409,7 @@ public class RegisterCustomerForm extends javax.swing.JInternalFrame {
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Long.class, java.lang.String.class, java.lang.Integer.class, java.lang.Object.class
+                java.lang.Long.class, java.lang.String.class, java.lang.Double.class, java.lang.Object.class
             };
             boolean[] canEdit = new boolean [] {
                 false, false, false, false
@@ -301,7 +423,23 @@ public class RegisterCustomerForm extends javax.swing.JInternalFrame {
                 return canEdit [columnIndex];
             }
         });
+        tableCustomer.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tableCustomerMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(tableCustomer);
+        if (tableCustomer.getColumnModel().getColumnCount() > 0) {
+            tableCustomer.getColumnModel().getColumn(0).setMinWidth(80);
+            tableCustomer.getColumnModel().getColumn(0).setPreferredWidth(80);
+            tableCustomer.getColumnModel().getColumn(0).setMaxWidth(80);
+            tableCustomer.getColumnModel().getColumn(2).setMinWidth(150);
+            tableCustomer.getColumnModel().getColumn(2).setPreferredWidth(150);
+            tableCustomer.getColumnModel().getColumn(2).setMaxWidth(150);
+            tableCustomer.getColumnModel().getColumn(3).setMinWidth(150);
+            tableCustomer.getColumnModel().getColumn(3).setPreferredWidth(150);
+            tableCustomer.getColumnModel().getColumn(3).setMaxWidth(150);
+        }
 
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
@@ -366,21 +504,135 @@ public class RegisterCustomerForm extends javax.swing.JInternalFrame {
 
     private void btnSaveClientActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveClientActionPerformed
         
+        RestTemplate restTemplate = new RestTemplate();
+        
         Date date = inputClosingDate.getDate();
         Instant instant = date.toInstant();
         LocalDate closingDateAt = instant.atZone(ZoneId.systemDefault()).toLocalDate();
         
-        DefaultTableModel tableModelCustomers = (DefaultTableModel) tableCustomer.getModel();
-        CustomersDTO customersDto = new CustomersDTO(Long.parseLong(inputCode.getText()), inputCustomerName.getText(), Integer.parseInt(inputPurchaseLimit.getText()), closingDateAt);
-        tableModelCustomers.addRow(new Object[]{
-                        customersDto.getCode(),
-                        customersDto.getCustomerName(),
-                        customersDto.getPurchaseLimit(),
-                        customersDto.getClosingDateAt()
-                });
+        CustomersDTO customersDTO = new CustomersDTO(Long.parseLong(inputCode.getText()), inputCustomerName.getText(), Double.parseDouble(inputPurchaseLimit.getText()), closingDateAt);
+        
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
+        HttpEntity<CustomersDTO> request = new HttpEntity<>(customersDTO, headers);
+        ResponseEntity<CustomersDTO> response = restTemplate.exchange(
+            CUSTOMER_URL,
+            HttpMethod.POST,
+            request,
+            CustomersDTO.class
+        );      
+
+        if (response.getStatusCodeValue() == 200) {
+           JOptionPane.showMessageDialog(this, "Cadastrado com sucesso");
+           loadCustomers();
+           setInitSaveFields();
+           clearFields();
+           System.out.println("Cadastrado cliente com sucesso: ");
+        } else {
+            JOptionPane.showMessageDialog(this, String.format("Falha ao salvar cliente: % " + response.getStatusCode()));
+            System.out.println("Falha ao salvar cliente: " + response.getStatusCode());
+        }    
+
+       
     }//GEN-LAST:event_btnSaveClientActionPerformed
 
+    private void btnNewCustomerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNewCustomerActionPerformed
+        // TODO add your handling code here:
+        setInitNewFields();
+    }//GEN-LAST:event_btnNewCustomerActionPerformed
 
+    private void btnCancelCustomerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelCustomerActionPerformed
+           setInitCancelFields();
+           clearFields();
+           
+    }//GEN-LAST:event_btnCancelCustomerActionPerformed
+
+    private void tableCustomerMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableCustomerMouseClicked
+        // TODO add your handling code here:        
+        DefaultTableModel model = (DefaultTableModel)tableCustomer.getModel();
+        int selectedRowIndex = tableCustomer.getSelectedRow();
+        int qtdRows = tableCustomer.getSelectedRowCount();
+        if(qtdRows == 1){
+            setInitEditFields();
+            inputCode.setText(model.getValueAt(selectedRowIndex, 0).toString());
+            inputCustomerName.setText(model.getValueAt(selectedRowIndex, 1).toString());
+            inputPurchaseLimit.setText(model.getValueAt(selectedRowIndex, 2).toString());
+        }if(qtdRows > 1){
+            JOptionPane.showMessageDialog(this, "Por favor selecione apenas um registro");
+        }
+       
+//        inputClosingDate.setText(model.getValueAt(selectedRowIndex, 3).toString());
+    }//GEN-LAST:event_tableCustomerMouseClicked
+
+    private void btnUpdateCustomerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateCustomerActionPerformed
+        // TODO add your handling code here:
+        Date date = inputClosingDate.getDate();
+        Instant instant = date.toInstant();
+        LocalDate closingDateAt = instant.atZone(ZoneId.systemDefault()).toLocalDate();
+        DefaultTableModel model = (DefaultTableModel)tableCustomer.getModel();
+        int selectedRowIndex = tableCustomer.getSelectedRow();
+        int qtdRows = tableCustomer.getSelectedRowCount();
+        if(qtdRows == 1){
+            setInitEditFields();
+            Long customerIdToUpdate = Long.parseLong(model.getValueAt(selectedRowIndex, 0).toString());
+            RestTemplate restTemplate = new RestTemplate();
+            
+            
+            CustomersDTO customersDTO = new CustomersDTO(customerIdToUpdate, inputCustomerName.getText(), Double.parseDouble(inputPurchaseLimit.getText()), closingDateAt);
+        
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
+            HttpEntity<CustomersDTO> request = new HttpEntity<>(customersDTO, headers);
+            ResponseEntity<Void> response = restTemplate.exchange(
+                CUSTOMER_URL,
+                HttpMethod.PUT,
+                request,
+                Void.class
+            );
+            
+            JOptionPane.showMessageDialog(this, "Cliente Atualizado com sucesso");
+            loadCustomers();
+            setInitSaveFields();
+            clearFields();
+        }
+        
+    }//GEN-LAST:event_btnUpdateCustomerActionPerformed
+
+    private void btnDeleteCustomerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteCustomerActionPerformed
+//        clearFields();
+        DefaultTableModel model = (DefaultTableModel)tableCustomer.getModel();
+        int selectedRowIndex = tableCustomer.getSelectedRow();
+        int qtdRows = tableCustomer.getSelectedRowCount();
+        if(qtdRows == 1){
+            setInitEditFields();
+            Long customerId = Long.parseLong(model.getValueAt(selectedRowIndex, 0).toString());
+            RestTemplate restTemplate = new RestTemplate();
+            String urlDelete = CUSTOMER_URL + customerId + "/";
+            restTemplate.delete(urlDelete);
+            JOptionPane.showMessageDialog(this, "Cliente deletado com sucesso");
+            loadCustomers();
+            setInitSaveFields();
+            clearFields();             
+        }if(qtdRows > 1){
+            JOptionPane.showMessageDialog(this, "Por favor selecione apenas um registro");
+        }
+//        
+//        try {
+//            // Construa a URL de solicitação com o ID do cliente
+//            String url = CUSTOMER_URL + "/" + customerId;
+//            
+//            // Realize a solicitação DELETE
+//            restTemplate.delete(url);
+//
+//            // Se a solicitação DELETE não lançar uma exceção, a exclusão foi bem-sucedida
+//            System.out.println("Cliente excluído com sucesso: " + customerId);
+//        } catch (Exception e) {
+//            // Trate exceções, se necessário
+//            System.err.println("Falha ao excluir cliente: " + e.getMessage());
+//        }
+    }//GEN-LAST:event_btnDeleteCustomerActionPerformed
+
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCancelCustomer;
     private javax.swing.JButton btnDeleteCustomer;
