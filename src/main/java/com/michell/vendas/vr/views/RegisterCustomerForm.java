@@ -5,6 +5,8 @@
 package com.michell.vendas.vr.views;
 
 import com.michell.vendas.vr.dtos.CustomersDTO;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -39,16 +41,18 @@ public class RegisterCustomerForm extends javax.swing.JInternalFrame {
         loadCustomers();        
     }
     
+       
     public void clearFields(){
         inputCode.setText(null);
         inputCustomerName.setText(null);
         inputPurchaseLimit.setText(null);
         inputClosingDate.cleanup();
         tableCustomer.clearSelection();
+        inputClosingDate.setDate(null);
     }
     
     public void setInitNewFields(){
-        inputCode.setEnabled(true);
+        inputCode.setEnabled(false);
         inputCustomerName.setEnabled(true);
         inputPurchaseLimit.setEnabled(true);
         inputClosingDate.setEnabled(true);
@@ -77,7 +81,7 @@ public class RegisterCustomerForm extends javax.swing.JInternalFrame {
     }
     
     public void setInitEditFields(){
-        inputCode.setEnabled(true);
+        inputCode.setEnabled(false);
         inputCustomerName.setEnabled(true);
         inputPurchaseLimit.setEnabled(true);
         inputClosingDate.setEnabled(true);
@@ -94,18 +98,15 @@ public class RegisterCustomerForm extends javax.swing.JInternalFrame {
          setInitSaveFields();
      }
     
+    
     public void loadCustomers(){
         RestTemplate restTemplate = new RestTemplate();
-
-        // Faz a requisição para a API e converte a resposta para uma lista de CustomersDTO
         List<CustomersDTO> customersList = restTemplate.exchange(
             CUSTOMER_URL,
             HttpMethod.GET,
             null,
             new ParameterizedTypeReference<List<CustomersDTO>>() {}
         ).getBody();
-
-        // Exibe o resultado para verificar
         if (customersList != null || !customersList.isEmpty()) {
                 DefaultTableModel tableModelCustomers = (DefaultTableModel) tableCustomer.getModel();
                 tableModelCustomers.setRowCount(0); //limpa os dados
@@ -113,10 +114,11 @@ public class RegisterCustomerForm extends javax.swing.JInternalFrame {
                     Long id = customer.getId();
                     String customerName = customer.getCustomerName();
                     LocalDate closingDate = customer.getClosingDateAt();
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+                    String formattedDate = closingDate.format(formatter);
                     Double purchaseLimit = customer.getPurchaseLimit();
-                    tableModelCustomers.addRow(new Object[]{id, customerName,purchaseLimit,closingDate});
+                    tableModelCustomers.addRow(new Object[]{id, customerName,purchaseLimit,formattedDate});
                 }
-           
         } 
     }
 
@@ -510,7 +512,10 @@ public class RegisterCustomerForm extends javax.swing.JInternalFrame {
         Instant instant = date.toInstant();
         LocalDate closingDateAt = instant.atZone(ZoneId.systemDefault()).toLocalDate();
         
-        CustomersDTO customersDTO = new CustomersDTO(Long.parseLong(inputCode.getText()), inputCustomerName.getText(), Double.parseDouble(inputPurchaseLimit.getText()), closingDateAt);
+        CustomersDTO customersDTO = new CustomersDTO();
+        customersDTO.setCustomerName(inputCustomerName.getText());
+        customersDTO.setPurchaseLimit(Double.parseDouble(inputPurchaseLimit.getText()));
+        customersDTO.setClosingDateAt(closingDateAt);
         
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
@@ -551,32 +556,41 @@ public class RegisterCustomerForm extends javax.swing.JInternalFrame {
         // TODO add your handling code here:        
         DefaultTableModel model = (DefaultTableModel)tableCustomer.getModel();
         int selectedRowIndex = tableCustomer.getSelectedRow();
-        int qtdRows = tableCustomer.getSelectedRowCount();
+        int qtdRows = tableCustomer.getSelectedRowCount();    
         if(qtdRows == 1){
-            setInitEditFields();
+            setInitEditFields();            
             inputCode.setText(model.getValueAt(selectedRowIndex, 0).toString());
             inputCustomerName.setText(model.getValueAt(selectedRowIndex, 1).toString());
             inputPurchaseLimit.setText(model.getValueAt(selectedRowIndex, 2).toString());
+            String inputClosingDateAmerican = model.getValueAt(selectedRowIndex, 3).toString();
+             try {
+                    SimpleDateFormat inputFormat = new SimpleDateFormat("dd/MM/yyyy");
+                    Date date = inputFormat.parse(inputClosingDateAmerican); 
+                    inputClosingDate.setDate(date);
+//                    inputClosingDate.setDateFormatString("dd/MM/yyyy");
+                    
+            } catch (ParseException ex) {
+                  ex.printStackTrace();
+            }
         }if(qtdRows > 1){
             JOptionPane.showMessageDialog(this, "Por favor selecione apenas um registro");
+            
         }
-       
-//        inputClosingDate.setText(model.getValueAt(selectedRowIndex, 3).toString());
     }//GEN-LAST:event_tableCustomerMouseClicked
 
     private void btnUpdateCustomerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateCustomerActionPerformed
         // TODO add your handling code here:
-        Date date = inputClosingDate.getDate();
-        Instant instant = date.toInstant();
-        LocalDate closingDateAt = instant.atZone(ZoneId.systemDefault()).toLocalDate();
-        DefaultTableModel model = (DefaultTableModel)tableCustomer.getModel();
+       
         int selectedRowIndex = tableCustomer.getSelectedRow();
         int qtdRows = tableCustomer.getSelectedRowCount();
         if(qtdRows == 1){
+            Date date = inputClosingDate.getDate();
+            Instant instant = date.toInstant();
+            LocalDate closingDateAt = instant.atZone(ZoneId.systemDefault()).toLocalDate();
+            DefaultTableModel model = (DefaultTableModel)tableCustomer.getModel();
             setInitEditFields();
             Long customerIdToUpdate = Long.parseLong(model.getValueAt(selectedRowIndex, 0).toString());
             RestTemplate restTemplate = new RestTemplate();
-            
             
             CustomersDTO customersDTO = new CustomersDTO(customerIdToUpdate, inputCustomerName.getText(), Double.parseDouble(inputPurchaseLimit.getText()), closingDateAt);
         
@@ -594,6 +608,8 @@ public class RegisterCustomerForm extends javax.swing.JInternalFrame {
             loadCustomers();
             setInitSaveFields();
             clearFields();
+        }if(qtdRows > 1){
+            JOptionPane.showMessageDialog(this, "Por favor selecione apenas um registro");
         }
         
     }//GEN-LAST:event_btnUpdateCustomerActionPerformed
@@ -604,32 +620,28 @@ public class RegisterCustomerForm extends javax.swing.JInternalFrame {
         int selectedRowIndex = tableCustomer.getSelectedRow();
         int qtdRows = tableCustomer.getSelectedRowCount();
         if(qtdRows == 1){
-            setInitEditFields();
-            Long customerId = Long.parseLong(model.getValueAt(selectedRowIndex, 0).toString());
-            RestTemplate restTemplate = new RestTemplate();
-            String urlDelete = CUSTOMER_URL + customerId + "/";
-            restTemplate.delete(urlDelete);
-            JOptionPane.showMessageDialog(this, "Cliente deletado com sucesso");
-            loadCustomers();
-            setInitSaveFields();
-            clearFields();             
+            int response = JOptionPane.showConfirmDialog(
+                    this,
+                    "Você tem a certeza que deseja excluir esse cliente?",
+                    "Confirmar Exclusão de Cliente",
+                    JOptionPane.YES_NO_OPTION,
+                    2,
+                    null                  
+                    );
+            if (response == JOptionPane.YES_OPTION){
+                setInitEditFields();
+                Long customerId = Long.parseLong(model.getValueAt(selectedRowIndex, 0).toString());
+                RestTemplate restTemplate = new RestTemplate();
+                String urlDelete = CUSTOMER_URL + customerId + "/";
+                restTemplate.delete(urlDelete);
+                JOptionPane.showMessageDialog(this, "Cliente deletado com sucesso");
+                loadCustomers();
+                setInitSaveFields();
+                clearFields();
+            }
         }if(qtdRows > 1){
             JOptionPane.showMessageDialog(this, "Por favor selecione apenas um registro");
         }
-//        
-//        try {
-//            // Construa a URL de solicitação com o ID do cliente
-//            String url = CUSTOMER_URL + "/" + customerId;
-//            
-//            // Realize a solicitação DELETE
-//            restTemplate.delete(url);
-//
-//            // Se a solicitação DELETE não lançar uma exceção, a exclusão foi bem-sucedida
-//            System.out.println("Cliente excluído com sucesso: " + customerId);
-//        } catch (Exception e) {
-//            // Trate exceções, se necessário
-//            System.err.println("Falha ao excluir cliente: " + e.getMessage());
-//        }
     }//GEN-LAST:event_btnDeleteCustomerActionPerformed
 
     
