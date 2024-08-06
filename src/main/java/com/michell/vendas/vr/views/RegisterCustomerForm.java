@@ -4,7 +4,16 @@
  */
 package com.michell.vendas.vr.views;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.michell.vendas.vr.dtos.CustomerResponseDTO;
+import com.michell.vendas.vr.dtos.CustomerStoreDTO;
 import com.michell.vendas.vr.dtos.CustomersDTO;
+import com.michell.vendas.vr.dtos.DeleteCustomerResponseDTO;
+import com.michell.vendas.vr.dtos.RetrieveAllCustomersResponseDTO;
+import com.michell.vendas.vr.dtos.SaveCustomerResponseDTO;
+import java.awt.HeadlessException;
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -23,6 +32,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 /**
@@ -101,16 +112,18 @@ public class RegisterCustomerForm extends javax.swing.JInternalFrame {
     
     public void loadCustomers(){
         RestTemplate restTemplate = new RestTemplate();
-        List<CustomersDTO> customersList = restTemplate.exchange(
+
+        RetrieveAllCustomersResponseDTO customersDto = restTemplate.exchange(
             CUSTOMER_URL,
             HttpMethod.GET,
             null,
-            new ParameterizedTypeReference<List<CustomersDTO>>() {}
+            new ParameterizedTypeReference<RetrieveAllCustomersResponseDTO>() {}
         ).getBody();
-        if (customersList != null || !customersList.isEmpty()) {
+        
+        if (customersDto != null) {
                 DefaultTableModel tableModelCustomers = (DefaultTableModel) tableCustomer.getModel();
                 tableModelCustomers.setRowCount(0); //limpa os dados
-                for (CustomersDTO customer : customersList) {
+                for (CustomerResponseDTO customer : customersDto.getCustomers()) {                    
                     Long id = customer.getId();
                     String customerName = customer.getCustomerName();
                     LocalDate closingDate = customer.getClosingDateAt();
@@ -119,7 +132,18 @@ public class RegisterCustomerForm extends javax.swing.JInternalFrame {
                     Double purchaseLimit = customer.getPurchaseLimit();
                     tableModelCustomers.addRow(new Object[]{id, customerName,purchaseLimit,formattedDate});
                 }
-        } 
+        }
+        // imprimir no console
+        if (customersDto != null) {
+            System.out.println("Success: " + customersDto.getMessage().isSuccess());
+            System.out.println("Details: " + customersDto.getMessage().getDetails());
+            for (CustomerResponseDTO customer : customersDto.getCustomers()) {
+                System.out.println("Customer ID: " + customer.getId());
+                System.out.println("Customer Name: " + customer.getCustomerName());
+                System.out.println("Purchase Limit: " + customer.getPurchaseLimit());
+                System.out.println("Closing Date: " + customer.getClosingDateAt());
+            }
+        }
     }
 
     /**
@@ -517,30 +541,47 @@ public class RegisterCustomerForm extends javax.swing.JInternalFrame {
         customersDTO.setPurchaseLimit(Double.parseDouble(inputPurchaseLimit.getText()));
         customersDTO.setClosingDateAt(closingDateAt);
         
+        CustomerStoreDTO storeDto = new CustomerStoreDTO();
+        storeDto.setCustomer(customersDTO);
+        
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
-        HttpEntity<CustomersDTO> request = new HttpEntity<>(customersDTO, headers);
-        ResponseEntity<CustomersDTO> response = restTemplate.exchange(
-            CUSTOMER_URL,
-            HttpMethod.POST,
-            request,
-            CustomersDTO.class
-        );      
+        HttpEntity<CustomerStoreDTO> request = new HttpEntity<>(storeDto, headers);
+        try {
+            
+                ResponseEntity<SaveCustomerResponseDTO> response = restTemplate.exchange(
+                CUSTOMER_URL,
+                HttpMethod.POST,
+                request,
+                SaveCustomerResponseDTO.class
+            ); 
 
-        if (response.getStatusCodeValue() == 200) {
-           JOptionPane.showMessageDialog(this, "Cadastrado com sucesso");
-           loadCustomers();
-           setInitSaveFields();
-           clearFields();
-           System.out.println("Cadastrado cliente com sucesso: ");
-        } else {
-            JOptionPane.showMessageDialog(this, String.format("Falha ao salvar cliente: % " + response.getStatusCode()));
-            System.out.println("Falha ao salvar cliente: " + response.getStatusCode());
-        }    
-
-       
+            JOptionPane.showMessageDialog(this, response.getBody().getMessage().getDetails());
+            loadCustomers();
+            setInitSaveFields();
+            clearFields();
+            
+        } catch (HttpServerErrorException e) {
+            String errorMessage = extractErrorMessage(e.getResponseBodyAsString());
+            JOptionPane.showMessageDialog(this, errorMessage, "Aviso de cliente já existente", JOptionPane.WARNING_MESSAGE);
+        } catch (HeadlessException | RestClientException e) {
+            JOptionPane.showMessageDialog(this, "Erro inesperado: " + e.getMessage());
+        }       
+      
     }//GEN-LAST:event_btnSaveClientActionPerformed
 
+//    formatar mensagem da exception lançada do salvar e pra garantia do excluir apesar excluir nao precisa
+    private String extractErrorMessage(String responseBody) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            JsonNode root = objectMapper.readTree(responseBody);
+            JsonNode messageNode = root.path("message");
+            return messageNode.path("details").asText();
+        } catch (IOException e) {
+            return "Erro ao processar mensagem de erro: " + e.getMessage();
+        }
+    }   
+    
     private void btnNewCustomerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNewCustomerActionPerformed
         // TODO add your handling code here:
         setInitNewFields();
@@ -592,26 +633,43 @@ public class RegisterCustomerForm extends javax.swing.JInternalFrame {
             Long customerIdToUpdate = Long.parseLong(model.getValueAt(selectedRowIndex, 0).toString());
             RestTemplate restTemplate = new RestTemplate();
             
-            CustomersDTO customersDTO = new CustomersDTO(customerIdToUpdate, inputCustomerName.getText(), Double.parseDouble(inputPurchaseLimit.getText()), closingDateAt);
-        
+            
+            CustomersDTO customersDTO = new CustomersDTO();
+            customersDTO.setId(customerIdToUpdate);
+            customersDTO.setCustomerName(inputCustomerName.getText());
+            customersDTO.setPurchaseLimit(Double.parseDouble(inputPurchaseLimit.getText()));
+            customersDTO.setClosingDateAt(closingDateAt);
+            CustomerStoreDTO storeDto = new CustomerStoreDTO();
+            storeDto.setCustomer(customersDTO);
+
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
-            HttpEntity<CustomersDTO> request = new HttpEntity<>(customersDTO, headers);
-            ResponseEntity<Void> response = restTemplate.exchange(
+            
+             HttpEntity<CustomerStoreDTO> request = new HttpEntity<>(storeDto, headers);
+            try {
+            
+                ResponseEntity<SaveCustomerResponseDTO> response = restTemplate.exchange(
                 CUSTOMER_URL,
                 HttpMethod.PUT,
                 request,
-                Void.class
-            );
-            
-            JOptionPane.showMessageDialog(this, "Cliente Atualizado com sucesso");
+                SaveCustomerResponseDTO.class
+            ); 
+
+            JOptionPane.showMessageDialog(this, response.getBody().getMessage().getDetails());
             loadCustomers();
             setInitSaveFields();
             clearFields();
+            
+            } catch (HttpServerErrorException e) {
+                String errorMessage = extractErrorMessage(e.getResponseBodyAsString());
+                JOptionPane.showMessageDialog(this, errorMessage, "Aviso de cliente não encontrado", JOptionPane.WARNING_MESSAGE);
+            } catch (HeadlessException | RestClientException e) {
+                JOptionPane.showMessageDialog(this, "Erro inesperado: " + e.getMessage());
+            }    
+
         }if(qtdRows > 1){
             JOptionPane.showMessageDialog(this, "Por favor selecione apenas um registro");
         }
-        
     }//GEN-LAST:event_btnUpdateCustomerActionPerformed
 
     private void btnDeleteCustomerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteCustomerActionPerformed
@@ -633,11 +691,26 @@ public class RegisterCustomerForm extends javax.swing.JInternalFrame {
                 Long customerId = Long.parseLong(model.getValueAt(selectedRowIndex, 0).toString());
                 RestTemplate restTemplate = new RestTemplate();
                 String urlDelete = CUSTOMER_URL + customerId + "/";
-                restTemplate.delete(urlDelete);
-                JOptionPane.showMessageDialog(this, "Cliente deletado com sucesso");
-                loadCustomers();
-                setInitSaveFields();
-                clearFields();
+                
+                  try {
+                        // Enviar a solicitação DELETE e obter a resposta
+                        ResponseEntity<DeleteCustomerResponseDTO> responseEntity = restTemplate.exchange(
+                            urlDelete,
+                            HttpMethod.DELETE,
+                            HttpEntity.EMPTY,
+                            DeleteCustomerResponseDTO.class
+                        );
+                        DeleteCustomerResponseDTO deleteResponse = responseEntity.getBody();
+                        JOptionPane.showMessageDialog(this, deleteResponse.getMessage().getDetails());
+                        loadCustomers();
+                        setInitSaveFields();
+                        clearFields();
+                    } catch (HttpServerErrorException e) {
+                        String errorMessage = extractErrorMessage(e.getResponseBodyAsString());
+                        JOptionPane.showMessageDialog(this, errorMessage, "Aviso de cliente Busca de cliente", JOptionPane.WARNING_MESSAGE);
+                    } catch (HeadlessException | RestClientException e) {
+                        JOptionPane.showMessageDialog(this, "Erro inesperado: " + e.getMessage());
+                    } 
             }
         }if(qtdRows > 1){
             JOptionPane.showMessageDialog(this, "Por favor selecione apenas um registro");

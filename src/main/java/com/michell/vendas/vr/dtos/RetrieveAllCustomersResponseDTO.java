@@ -4,7 +4,7 @@
  */
 package com.michell.vendas.vr.dtos;
 
-import java.time.LocalDate;
+import java.util.List;
 
 import lombok.Generated;
 import lombok.Getter;
@@ -16,18 +16,15 @@ import lombok.Setter;
  *
  * @author michell-bento
  */
+
 @Getter
 @Setter
 @Generated
 @NoArgsConstructor
-public class CustomersDTO {
-    
-    private Long id;
-    
-    private String customerName;
-    
-    private Double purchaseLimit;
-    
-    private LocalDate closingDateAt;   
-    
+public class RetrieveAllCustomersResponseDTO extends ResponseDTO {
+    private List<CustomerResponseDTO> customers;
+
+    public RetrieveAllCustomersResponseDTO(boolean success, String details) {
+        super(success, details);
+    }
 }

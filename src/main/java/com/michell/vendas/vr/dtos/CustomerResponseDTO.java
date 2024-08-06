@@ -9,7 +9,6 @@ import java.time.LocalDate;
 import lombok.Generated;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
 import lombok.Setter;
 
 /**
@@ -20,14 +19,9 @@ import lombok.Setter;
 @Setter
 @Generated
 @NoArgsConstructor
-public class CustomersDTO {
-    
+public class CustomerResponseDTO {
     private Long id;
-    
     private String customerName;
-    
     private Double purchaseLimit;
-    
-    private LocalDate closingDateAt;   
-    
+    private LocalDate closingDateAt;
 }

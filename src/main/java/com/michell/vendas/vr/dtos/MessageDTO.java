@@ -4,12 +4,10 @@
  */
 package com.michell.vendas.vr.dtos;
 
-import java.time.LocalDate;
 
 import lombok.Generated;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
 import lombok.Setter;
 
 /**
@@ -20,14 +18,12 @@ import lombok.Setter;
 @Setter
 @Generated
 @NoArgsConstructor
-public class CustomersDTO {
-    
-    private Long id;
-    
-    private String customerName;
-    
-    private Double purchaseLimit;
-    
-    private LocalDate closingDateAt;   
-    
+public class MessageDTO {
+    private boolean success;
+    private String details;
+
+    public MessageDTO(boolean success, String details) {
+        this.success = success;
+        this.details = details;
+    }
 }

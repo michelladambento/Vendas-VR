@@ -4,7 +4,6 @@
  */
 package com.michell.vendas.vr.dtos;
 
-import java.time.LocalDate;
 
 import lombok.Generated;
 import lombok.Getter;
@@ -20,14 +19,10 @@ import lombok.Setter;
 @Setter
 @Generated
 @NoArgsConstructor
-public class CustomersDTO {
-    
-    private Long id;
-    
-    private String customerName;
-    
-    private Double purchaseLimit;
-    
-    private LocalDate closingDateAt;   
-    
+public class ResponseDTO {
+    private MessageDTO message;
+
+    public ResponseDTO(boolean success, String details) {
+        this.message = new MessageDTO(success, details);
+    }
 }
