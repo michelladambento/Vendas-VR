@@ -21,10 +21,10 @@ import lombok.Setter;
 @Setter
 @Generated
 @NoArgsConstructor
-public class RetrieveAllCustomersResponseDTO extends ResponseDTO {
+public class RetrieveAllCustomersDTO extends ResponseDTO {
     private List<CustomerDTO> customers;
 
-    public RetrieveAllCustomersResponseDTO(boolean success, String details) {
+    public RetrieveAllCustomersDTO(boolean success, String details) {
         super(success, details);
     }
 }

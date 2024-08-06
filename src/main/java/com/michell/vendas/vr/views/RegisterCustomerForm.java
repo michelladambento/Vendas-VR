@@ -8,7 +8,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.michell.vendas.vr.dtos.CustomerDTO;
 import com.michell.vendas.vr.dtos.ResponseDTO;
-import com.michell.vendas.vr.dtos.RetrieveAllCustomersResponseDTO;
+import com.michell.vendas.vr.dtos.RetrieveAllCustomersDTO;
 import java.awt.HeadlessException;
 import java.io.IOException;
 import java.text.ParseException;
@@ -110,11 +110,10 @@ public class RegisterCustomerForm extends javax.swing.JInternalFrame {
     public void loadCustomers(){
         RestTemplate restTemplate = new RestTemplate();
 
-        RetrieveAllCustomersResponseDTO customersDto = restTemplate.exchange(
-            CUSTOMER_URL,
+        RetrieveAllCustomersDTO customersDto = restTemplate.exchange(CUSTOMER_URL,
             HttpMethod.GET,
             null,
-            new ParameterizedTypeReference<RetrieveAllCustomersResponseDTO>() {}
+            new ParameterizedTypeReference<RetrieveAllCustomersDTO>() {}
         ).getBody();
         
         if (customersDto != null) {
