@@ -4,7 +4,7 @@
 
 package com.michell.vendas.vr;
 
-import com.michell.vendas.vr.dtos.CustomersDTO;
+import com.michell.vendas.vr.dtos.CustomerDTO;
 import com.michell.vendas.vr.views.VendasMainForm;
 import com.sun.tools.javac.Main;
 import java.awt.event.ActionEvent;

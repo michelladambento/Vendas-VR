@@ -6,12 +6,9 @@ package com.michell.vendas.vr.views;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.michell.vendas.vr.dtos.CustomerResponseDTO;
-import com.michell.vendas.vr.dtos.CustomerStoreDTO;
-import com.michell.vendas.vr.dtos.CustomersDTO;
-import com.michell.vendas.vr.dtos.DeleteCustomerResponseDTO;
+import com.michell.vendas.vr.dtos.CustomerDTO;
+import com.michell.vendas.vr.dtos.ResponseDTO;
 import com.michell.vendas.vr.dtos.RetrieveAllCustomersResponseDTO;
-import com.michell.vendas.vr.dtos.SaveCustomerResponseDTO;
 import java.awt.HeadlessException;
 import java.io.IOException;
 import java.text.ParseException;
@@ -123,7 +120,7 @@ public class RegisterCustomerForm extends javax.swing.JInternalFrame {
         if (customersDto != null) {
                 DefaultTableModel tableModelCustomers = (DefaultTableModel) tableCustomer.getModel();
                 tableModelCustomers.setRowCount(0); //limpa os dados
-                for (CustomerResponseDTO customer : customersDto.getCustomers()) {                    
+                for (CustomerDTO customer : customersDto.getCustomers()) {                    
                     Long id = customer.getId();
                     String customerName = customer.getCustomerName();
                     LocalDate closingDate = customer.getClosingDateAt();
@@ -137,7 +134,7 @@ public class RegisterCustomerForm extends javax.swing.JInternalFrame {
         if (customersDto != null) {
             System.out.println("Success: " + customersDto.getMessage().isSuccess());
             System.out.println("Details: " + customersDto.getMessage().getDetails());
-            for (CustomerResponseDTO customer : customersDto.getCustomers()) {
+            for (CustomerDTO customer : customersDto.getCustomers()) {
                 System.out.println("Customer ID: " + customer.getId());
                 System.out.println("Customer Name: " + customer.getCustomerName());
                 System.out.println("Purchase Limit: " + customer.getPurchaseLimit());
@@ -536,24 +533,21 @@ public class RegisterCustomerForm extends javax.swing.JInternalFrame {
         Instant instant = date.toInstant();
         LocalDate closingDateAt = instant.atZone(ZoneId.systemDefault()).toLocalDate();
         
-        CustomersDTO customersDTO = new CustomersDTO();
+        CustomerDTO customersDTO = new CustomerDTO();
         customersDTO.setCustomerName(inputCustomerName.getText());
         customersDTO.setPurchaseLimit(Double.parseDouble(inputPurchaseLimit.getText()));
         customersDTO.setClosingDateAt(closingDateAt);
         
-        CustomerStoreDTO storeDto = new CustomerStoreDTO();
-        storeDto.setCustomer(customersDTO);
-        
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
-        HttpEntity<CustomerStoreDTO> request = new HttpEntity<>(storeDto, headers);
+        HttpEntity<CustomerDTO> request = new HttpEntity<>(customersDTO, headers);
         try {
             
-                ResponseEntity<SaveCustomerResponseDTO> response = restTemplate.exchange(
+                ResponseEntity<ResponseDTO> response = restTemplate.exchange(
                 CUSTOMER_URL,
                 HttpMethod.POST,
                 request,
-                SaveCustomerResponseDTO.class
+                ResponseDTO.class
             ); 
 
             JOptionPane.showMessageDialog(this, response.getBody().getMessage().getDetails());
@@ -634,25 +628,23 @@ public class RegisterCustomerForm extends javax.swing.JInternalFrame {
             RestTemplate restTemplate = new RestTemplate();
             
             
-            CustomersDTO customersDTO = new CustomersDTO();
+            CustomerDTO customersDTO = new CustomerDTO();
             customersDTO.setId(customerIdToUpdate);
             customersDTO.setCustomerName(inputCustomerName.getText());
             customersDTO.setPurchaseLimit(Double.parseDouble(inputPurchaseLimit.getText()));
             customersDTO.setClosingDateAt(closingDateAt);
-            CustomerStoreDTO storeDto = new CustomerStoreDTO();
-            storeDto.setCustomer(customersDTO);
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
             
-             HttpEntity<CustomerStoreDTO> request = new HttpEntity<>(storeDto, headers);
+             HttpEntity<CustomerDTO> request = new HttpEntity<>(customersDTO, headers);
             try {
             
-                ResponseEntity<SaveCustomerResponseDTO> response = restTemplate.exchange(
+                ResponseEntity<ResponseDTO> response = restTemplate.exchange(
                 CUSTOMER_URL,
                 HttpMethod.PUT,
                 request,
-                SaveCustomerResponseDTO.class
+                ResponseDTO.class
             ); 
 
             JOptionPane.showMessageDialog(this, response.getBody().getMessage().getDetails());
@@ -694,13 +686,13 @@ public class RegisterCustomerForm extends javax.swing.JInternalFrame {
                 
                   try {
                         // Enviar a solicitação DELETE e obter a resposta
-                        ResponseEntity<DeleteCustomerResponseDTO> responseEntity = restTemplate.exchange(
+                        ResponseEntity<ResponseDTO> responseEntity = restTemplate.exchange(
                             urlDelete,
                             HttpMethod.DELETE,
                             HttpEntity.EMPTY,
-                            DeleteCustomerResponseDTO.class
+                            ResponseDTO.class
                         );
-                        DeleteCustomerResponseDTO deleteResponse = responseEntity.getBody();
+                        ResponseDTO deleteResponse = responseEntity.getBody();
                         JOptionPane.showMessageDialog(this, deleteResponse.getMessage().getDetails());
                         loadCustomers();
                         setInitSaveFields();

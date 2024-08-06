@@ -1,12 +1,8 @@
 /home/michell-bento/NetBeansProjects/Vendas-VR/src/main/java/com/michell/vendas/vr/dtos/RetrieveAllCustomersResponseDTO.java
 /home/michell-bento/NetBeansProjects/Vendas-VR/src/main/java/com/michell/vendas/vr/views/RegisterProductForm.java
 /home/michell-bento/NetBeansProjects/Vendas-VR/src/main/java/com/michell/vendas/vr/views/VendasMainForm.java
-/home/michell-bento/NetBeansProjects/Vendas-VR/src/main/java/com/michell/vendas/vr/dtos/CustomersDTO.java
 /home/michell-bento/NetBeansProjects/Vendas-VR/src/main/java/com/michell/vendas/vr/dtos/MessageDTO.java
 /home/michell-bento/NetBeansProjects/Vendas-VR/src/main/java/com/michell/vendas/vr/dtos/ResponseDTO.java
-/home/michell-bento/NetBeansProjects/Vendas-VR/src/main/java/com/michell/vendas/vr/dtos/CustomerResponseDTO.java
-/home/michell-bento/NetBeansProjects/Vendas-VR/src/main/java/com/michell/vendas/vr/dtos/DeleteCustomerResponseDTO.java
-/home/michell-bento/NetBeansProjects/Vendas-VR/src/main/java/com/michell/vendas/vr/dtos/SaveCustomerResponseDTO.java
-/home/michell-bento/NetBeansProjects/Vendas-VR/src/main/java/com/michell/vendas/vr/dtos/CustomerStoreDTO.java
+/home/michell-bento/NetBeansProjects/Vendas-VR/src/main/java/com/michell/vendas/vr/dtos/CustomerDTO.java
 /home/michell-bento/NetBeansProjects/Vendas-VR/src/main/java/com/michell/vendas/vr/VendasVR.java
 /home/michell-bento/NetBeansProjects/Vendas-VR/src/main/java/com/michell/vendas/vr/views/RegisterCustomerForm.java
