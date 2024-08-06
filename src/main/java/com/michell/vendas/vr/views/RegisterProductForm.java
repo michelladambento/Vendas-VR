@@ -4,18 +4,131 @@
  */
 package com.michell.vendas.vr.views;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.michell.vendas.vr.dtos.CustomerDTO;
+import com.michell.vendas.vr.dtos.ProductDTO;
+import com.michell.vendas.vr.dtos.ResponseDTO;
+import com.michell.vendas.vr.dtos.RetrieveAllCustomersDTO;
+import com.michell.vendas.vr.dtos.RetrieveAllProductsDTO;
+import java.awt.HeadlessException;
+import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestTemplate;
+
 /**
  *
  * @author michell-bento
  */
 public class RegisterProductForm extends javax.swing.JInternalFrame {
+    
+    private static final String PRODUCT_URL = "http://localhost:8080/product/";
 
     /**
      * Creates new form RegisterProductForm
      */
     public RegisterProductForm() {
         initComponents();
+        loadProducts(); 
     }
+    
+      public void clearFields(){
+        inputCode.setText(null);
+        inputDescription.setText(null);
+        inputPrice.setText(null);
+        tableProduct.clearSelection();
+    }
+    
+    public void setInitNewFields(){
+        inputCode.setEnabled(false);
+        inputDescription.setEnabled(true);
+        inputPrice.setEnabled(true);      
+        inputSearchProduct.setEnabled(true);
+
+        btnDeleteProduct.setEnabled(false);
+        btnCancelProduct.setEnabled(true);
+        btnUpdateProduct.setEnabled(false);
+        btnSaveProduct.setEnabled(true);
+        btnNewProduct.setEnabled(false);
+    }
+    
+    public void setInitSaveFields(){
+        inputCode.setEnabled(false);
+        inputDescription.setEnabled(false);
+        inputPrice.setEnabled(false);
+        inputSearchProduct.setEnabled(false);
+
+        btnDeleteProduct.setEnabled(false);
+        btnCancelProduct.setEnabled(false);
+        btnUpdateProduct.setEnabled(false);
+        btnSaveProduct.setEnabled(false);
+        btnNewProduct.setEnabled(true);  
+        
+    }
+    
+    public void setInitEditFields(){
+        inputCode.setEnabled(false);
+        inputDescription.setEnabled(true);
+        inputPrice.setEnabled(true);
+        inputSearchProduct.setEnabled(true);
+        
+        btnDeleteProduct.setEnabled(true);
+        btnCancelProduct.setEnabled(true);
+        btnUpdateProduct.setEnabled(true);
+        btnSaveProduct.setEnabled(false);
+        btnNewProduct.setEnabled(false);
+    }
+     
+    public void setInitCancelFields(){
+         setInitSaveFields();
+    }
+    
+    public void loadProducts(){
+        RestTemplate restTemplate = new RestTemplate();
+
+        RetrieveAllProductsDTO productsDto = restTemplate.exchange(PRODUCT_URL,
+            HttpMethod.GET,
+            null,
+            new ParameterizedTypeReference<RetrieveAllProductsDTO>() {}
+        ).getBody();
+        
+        if (productsDto != null) {
+                DefaultTableModel tableModelCustomers = (DefaultTableModel) tableProduct.getModel();
+                tableModelCustomers.setRowCount(0); //limpa os dados
+                for (ProductDTO product : productsDto.getProducts()) {                    
+                    Long id = product.getId();
+                    String description = product.getDescription();
+                    Double price = product.getPrice();
+                    tableModelCustomers.addRow(new Object[]{id, description, price});
+                }
+        }      
+    }
+      
+    private String extractErrorMessage(String responseBody) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            JsonNode root = objectMapper.readTree(responseBody);
+            JsonNode messageNode = root.path("message");
+            return messageNode.path("details").asText();
+        } catch (IOException e) {
+            return "Erro ao processar mensagem de erro: " + e.getMessage();
+        }
+    } 
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -26,21 +139,546 @@ public class RegisterProductForm extends javax.swing.JInternalFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jPanel2 = new javax.swing.JPanel();
+        jLabel5 = new javax.swing.JLabel();
+        jPanel1 = new javax.swing.JPanel();
+        inputCode = new javax.swing.JTextField();
+        jLabel2 = new javax.swing.JLabel();
+        inputDescription = new javax.swing.JTextField();
+        jLabel3 = new javax.swing.JLabel();
+        inputPrice = new javax.swing.JTextField();
+        jLabel6 = new javax.swing.JLabel();
+        jPanel3 = new javax.swing.JPanel();
+        btnDeleteProduct = new javax.swing.JButton();
+        btnCancelProduct = new javax.swing.JButton();
+        btnUpdateProduct = new javax.swing.JButton();
+        btnSaveProduct = new javax.swing.JButton();
+        btnNewProduct = new javax.swing.JButton();
+        jPanel4 = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        inputSearchProduct = new javax.swing.JTextField();
+        jLabel7 = new javax.swing.JLabel();
+        jPanel5 = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tableProduct = new javax.swing.JTable();
+
+        setClosable(true);
+        setIconifiable(true);
+        setTitle("VR Software");
+        setFrameIcon(new javax.swing.ImageIcon(getClass().getResource("/images/vr-icon-32.png"))); // NOI18N
+
+        jPanel2.setBackground(new java.awt.Color(255, 153, 0));
+        jPanel2.setForeground(new java.awt.Color(255, 153, 0));
+
+        jLabel5.setBackground(new java.awt.Color(255, 153, 0));
+        jLabel5.setFont(new java.awt.Font("Liberation Sans", 0, 36)); // NOI18N
+        jLabel5.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel5.setText("Cadastro de Produtos");
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(15, Short.MAX_VALUE))
+        );
+
+        jPanel1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+
+        inputCode.setEnabled(false);
+        inputCode.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                inputCodeActionPerformed(evt);
+            }
+        });
+
+        jLabel2.setFont(new java.awt.Font("Liberation Sans", 0, 15)); // NOI18N
+        jLabel2.setText("Descrição");
+
+        inputDescription.setEnabled(false);
+        inputDescription.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                inputDescriptionActionPerformed(evt);
+            }
+        });
+
+        jLabel3.setFont(new java.awt.Font("Liberation Sans", 0, 15)); // NOI18N
+        jLabel3.setText("Preço");
+
+        inputPrice.setEnabled(false);
+
+        jLabel6.setFont(new java.awt.Font("Liberation Sans", 0, 15)); // NOI18N
+        jLabel6.setText("Código");
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel2)
+                    .addComponent(inputDescription, javax.swing.GroupLayout.PREFERRED_SIZE, 409, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel6)
+                            .addComponent(inputCode, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(31, 31, 31)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(inputPrice, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel6)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(inputCode, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel3)
+                        .addGap(6, 6, 6)
+                        .addComponent(inputPrice, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(inputDescription, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(16, Short.MAX_VALUE))
+        );
+
+        jPanel3.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+
+        btnDeleteProduct.setBackground(new java.awt.Color(255, 153, 102));
+        btnDeleteProduct.setFont(new java.awt.Font("Liberation Sans", 1, 15)); // NOI18N
+        btnDeleteProduct.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/trash-icon-vr.png"))); // NOI18N
+        btnDeleteProduct.setText("Excluir");
+        btnDeleteProduct.setEnabled(false);
+        btnDeleteProduct.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDeleteProductActionPerformed(evt);
+            }
+        });
+
+        btnCancelProduct.setBackground(new java.awt.Color(255, 153, 102));
+        btnCancelProduct.setFont(new java.awt.Font("Liberation Sans", 1, 15)); // NOI18N
+        btnCancelProduct.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/clear-icon-vr.png"))); // NOI18N
+        btnCancelProduct.setText("Cancelar");
+        btnCancelProduct.setEnabled(false);
+        btnCancelProduct.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCancelProductActionPerformed(evt);
+            }
+        });
+
+        btnUpdateProduct.setBackground(new java.awt.Color(255, 153, 102));
+        btnUpdateProduct.setFont(new java.awt.Font("Liberation Sans", 1, 15)); // NOI18N
+        btnUpdateProduct.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/pencil-icon-vr.png"))); // NOI18N
+        btnUpdateProduct.setText("Atualizar");
+        btnUpdateProduct.setEnabled(false);
+        btnUpdateProduct.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnUpdateProductActionPerformed(evt);
+            }
+        });
+
+        btnSaveProduct.setBackground(new java.awt.Color(255, 153, 0));
+        btnSaveProduct.setFont(new java.awt.Font("Liberation Sans", 1, 15)); // NOI18N
+        btnSaveProduct.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/save-icon-3d-vr.png"))); // NOI18N
+        btnSaveProduct.setText("Salvar");
+        btnSaveProduct.setEnabled(false);
+        btnSaveProduct.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSaveProductActionPerformed(evt);
+            }
+        });
+
+        btnNewProduct.setBackground(new java.awt.Color(255, 153, 0));
+        btnNewProduct.setFont(new java.awt.Font("Liberation Sans", 1, 24)); // NOI18N
+        btnNewProduct.setForeground(new java.awt.Color(255, 255, 255));
+        btnNewProduct.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/plus-icon-vr.png"))); // NOI18N
+        btnNewProduct.setText("NOVO");
+        btnNewProduct.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnNewProductActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addComponent(btnSaveProduct, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnDeleteProduct, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addComponent(btnCancelProduct, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnUpdateProduct, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(btnNewProduct, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(btnSaveProduct, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnDeleteProduct, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(btnCancelProduct, javax.swing.GroupLayout.DEFAULT_SIZE, 45, Short.MAX_VALUE)
+                    .addComponent(btnUpdateProduct, javax.swing.GroupLayout.DEFAULT_SIZE, 45, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(btnNewProduct, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+        );
+
+        jPanel4.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+
+        jLabel1.setFont(new java.awt.Font("Liberation Sans", 0, 15)); // NOI18N
+        jLabel1.setText("Pesquisa pelo nome do produto");
+
+        inputSearchProduct.setEnabled(false);
+        inputSearchProduct.setRequestFocusEnabled(false);
+
+        jLabel7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/search-icon-vr.png"))); // NOI18N
+
+        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
+        jPanel4.setLayout(jPanel4Layout);
+        jPanel4Layout.setHorizontalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(inputSearchProduct))
+                .addContainerGap())
+        );
+        jPanel4Layout.setVerticalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jLabel7)
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(4, 4, 4)))
+                .addComponent(inputSearchProduct, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        jPanel5.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+
+        tableProduct.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Código", "Descrição", "Preço"
+            }
+        ) {
+            Class[] types = new Class [] {
+                java.lang.Long.class, java.lang.String.class, java.lang.Double.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, false, false
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        tableProduct.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tableProductMouseClicked(evt);
+            }
+        });
+        tableProduct.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                tableProductKeyReleased(evt);
+            }
+        });
+        jScrollPane1.setViewportView(tableProduct);
+        if (tableProduct.getColumnModel().getColumnCount() > 0) {
+            tableProduct.getColumnModel().getColumn(0).setMinWidth(80);
+            tableProduct.getColumnModel().getColumn(0).setPreferredWidth(80);
+            tableProduct.getColumnModel().getColumn(0).setMaxWidth(80);
+            tableProduct.getColumnModel().getColumn(2).setMinWidth(150);
+            tableProduct.getColumnModel().getColumn(2).setPreferredWidth(150);
+            tableProduct.getColumnModel().getColumn(2).setMaxWidth(150);
+        }
+
+        javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
+        jPanel5.setLayout(jPanel5Layout);
+        jPanel5Layout.setHorizontalGroup(
+            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel5Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane1)
+                .addContainerGap())
+        );
+        jPanel5Layout.setVerticalGroup(
+            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel5Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 232, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(67, Short.MAX_VALUE))
+        );
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 394, Short.MAX_VALUE)
+            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(jPanel4, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 274, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(27, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void inputCodeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_inputCodeActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_inputCodeActionPerformed
+
+    private void inputDescriptionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_inputDescriptionActionPerformed
+        // TODO add your handling code here:
+
+    }//GEN-LAST:event_inputDescriptionActionPerformed
+
+    private void btnDeleteProductActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteProductActionPerformed
+        DefaultTableModel model = (DefaultTableModel)tableProduct.getModel();
+        int selectedRowIndex = tableProduct.getSelectedRow();
+        int qtdRows = tableProduct.getSelectedRowCount();
+        
+        
+        if(qtdRows == 1){
+            int response = JOptionPane.showConfirmDialog(
+                    this,
+                    "Você tem a certeza que deseja excluir esse produto?",
+                    "Confirmar Exclusão de Produto",
+                    JOptionPane.YES_NO_OPTION,
+                    2,
+                    null                  
+                    );
+            if (response == JOptionPane.YES_OPTION){
+                setInitEditFields();
+                Long productId = Long.parseLong(model.getValueAt(selectedRowIndex, 0).toString());
+                RestTemplate restTemplate = new RestTemplate();
+                String urlDelete = PRODUCT_URL + productId + "/";
+                
+                  try {
+                        ResponseEntity<ResponseDTO> responseEntity = restTemplate.exchange(
+                            urlDelete,
+                            HttpMethod.DELETE,
+                            HttpEntity.EMPTY,
+                            ResponseDTO.class
+                        );
+                        ResponseDTO deleteResponse = responseEntity.getBody();
+                        JOptionPane.showMessageDialog(this, deleteResponse.getMessage().getDetails());
+                        loadProducts();
+                        setInitSaveFields();
+                        clearFields();
+                    } catch (HttpServerErrorException e) {
+                        String errorMessage = extractErrorMessage(e.getResponseBodyAsString());
+                        JOptionPane.showMessageDialog(this, errorMessage, "Aviso de busca", JOptionPane.WARNING_MESSAGE);
+                    } catch (HeadlessException | RestClientException e) {
+                        JOptionPane.showMessageDialog(this, "Erro inesperado: " + e.getMessage());
+                    } 
+            }
+        }if(qtdRows > 1){
+            JOptionPane.showMessageDialog(this, "Por favor selecione apenas um registro");
+        }
+    }//GEN-LAST:event_btnDeleteProductActionPerformed
+
+    private void btnCancelProductActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelProductActionPerformed
+          setInitCancelFields();
+           clearFields();
+    }//GEN-LAST:event_btnCancelProductActionPerformed
+
+    private void btnUpdateProductActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateProductActionPerformed
+        // TODO add your handling code here:
+        int selectedRowIndex = tableProduct.getSelectedRow();
+        int qtdRows = tableProduct.getSelectedRowCount();
+        if(qtdRows == 1){
+            DefaultTableModel model = (DefaultTableModel)tableProduct.getModel();
+            setInitEditFields();
+            Long productIdToUpdate = Long.parseLong(model.getValueAt(selectedRowIndex, 0).toString());
+            RestTemplate restTemplate = new RestTemplate();
+            
+            
+            ProductDTO productDTO = new ProductDTO();
+            productDTO.setId(productIdToUpdate);
+            productDTO.setDescription(inputDescription.getText());
+            productDTO.setPrice(Double.parseDouble(inputPrice.getText()));
+            
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
+            
+            HttpEntity<ProductDTO> request = new HttpEntity<>(productDTO, headers);
+            try {
+            
+                ResponseEntity<ResponseDTO> response = restTemplate.exchange(
+                PRODUCT_URL,
+                HttpMethod.PUT,
+                request,
+                ResponseDTO.class
+            ); 
+
+            JOptionPane.showMessageDialog(this, response.getBody().getMessage().getDetails());
+            loadProducts();
+            setInitSaveFields();
+            clearFields();
+            
+            } catch (HttpServerErrorException e) {
+                String errorMessage = extractErrorMessage(e.getResponseBodyAsString());
+                JOptionPane.showMessageDialog(this, errorMessage, "Aviso de cliente não encontrado", JOptionPane.WARNING_MESSAGE);
+            } catch (HeadlessException | RestClientException e) {
+                JOptionPane.showMessageDialog(this, "Erro inesperado: " + e.getMessage());
+            }    
+
+        }if(qtdRows > 1){
+            JOptionPane.showMessageDialog(this, "Por favor selecione apenas um registro");
+        }
+    }//GEN-LAST:event_btnUpdateProductActionPerformed
+
+    private void btnSaveProductActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveProductActionPerformed
+        RestTemplate restTemplate = new RestTemplate();
+        ProductDTO productDTO = new ProductDTO();
+        productDTO.setDescription(inputDescription.getText());
+        productDTO.setPrice(Double.parseDouble(inputPrice.getText()));
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
+        HttpEntity<ProductDTO> request = new HttpEntity<>(productDTO, headers);
+        try {
+            
+                ResponseEntity<ResponseDTO> response = restTemplate.exchange(
+                PRODUCT_URL,
+                HttpMethod.POST,
+                request,
+                ResponseDTO.class
+            ); 
+
+            JOptionPane.showMessageDialog(this, response.getBody().getMessage().getDetails());
+            loadProducts();
+            setInitSaveFields();
+            clearFields();
+            
+        } catch (HttpServerErrorException e) {
+            String errorMessage = extractErrorMessage(e.getResponseBodyAsString());
+            JOptionPane.showMessageDialog(this, errorMessage, "Aviso de cliente já existente", JOptionPane.WARNING_MESSAGE);
+        } catch (HeadlessException | RestClientException e) {
+            JOptionPane.showMessageDialog(this, "Erro inesperado: " + e.getMessage());
+        }       
+    }//GEN-LAST:event_btnSaveProductActionPerformed
+
+    private void btnNewProductActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNewProductActionPerformed
+        // TODO add your handling code here:
+        setInitNewFields();
+    }//GEN-LAST:event_btnNewProductActionPerformed
+
+    private void tableProductMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableProductMouseClicked
+         // TODO add your handling code here:        
+        DefaultTableModel model = (DefaultTableModel)tableProduct.getModel();
+        int selectedRowIndex = tableProduct.getSelectedRow();
+        int qtdRows = tableProduct.getSelectedRowCount();  
+        
+        if(qtdRows == 1){
+            setInitEditFields();            
+            inputCode.setText(model.getValueAt(selectedRowIndex, 0).toString());
+            inputDescription.setText(model.getValueAt(selectedRowIndex, 1).toString());
+            inputPrice.setText(model.getValueAt(selectedRowIndex, 2).toString());
+        }if(qtdRows > 1){
+            JOptionPane.showMessageDialog(this, "Por favor selecione apenas um registro");
+        }
+    }//GEN-LAST:event_tableProductMouseClicked
+
+    private void tableProductKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tableProductKeyReleased
+        // TODO add your handling code here:
+        DefaultTableModel model = (DefaultTableModel)tableProduct.getModel();
+        int selectedRowIndex = tableProduct.getSelectedRow();
+        int qtdRows = tableProduct.getSelectedRowCount(); 
+        if(qtdRows == 1){
+            setInitEditFields();            
+            inputCode.setText(model.getValueAt(selectedRowIndex, 0).toString());
+            inputDescription.setText(model.getValueAt(selectedRowIndex, 1).toString());
+            inputPrice.setText(model.getValueAt(selectedRowIndex, 2).toString());
+        }if(qtdRows > 1){
+            JOptionPane.showMessageDialog(this, "Por favor selecione apenas um registro");
+        }
+    }//GEN-LAST:event_tableProductKeyReleased
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnCancelProduct;
+    private javax.swing.JButton btnDeleteProduct;
+    private javax.swing.JButton btnNewProduct;
+    private javax.swing.JButton btnSaveProduct;
+    private javax.swing.JButton btnUpdateProduct;
+    private javax.swing.JTextField inputCode;
+    private javax.swing.JTextField inputDescription;
+    private javax.swing.JTextField inputPrice;
+    private javax.swing.JTextField inputSearchProduct;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanel5;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTable tableProduct;
     // End of variables declaration//GEN-END:variables
 }

@@ -11,6 +11,7 @@ import com.michell.vendas.vr.dtos.ResponseDTO;
 import com.michell.vendas.vr.dtos.RetrieveAllCustomersDTO;
 import java.awt.HeadlessException;
 import java.io.IOException;
+import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -20,9 +21,11 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.text.NumberFormatter;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -39,7 +42,7 @@ import org.springframework.web.client.RestTemplate;
  */
 public class RegisterCustomerForm extends javax.swing.JInternalFrame {
     
-     private static final String CUSTOMER_URL = "http://localhost:8080/customer/";
+    private static final String CUSTOMER_URL = "http://localhost:8080/customer/";
 
     /**
      * Creates new form RegisterCustomerForm
@@ -290,7 +293,7 @@ public class RegisterCustomerForm extends javax.swing.JInternalFrame {
                         .addGap(6, 6, 6)
                         .addComponent(inputPurchaseLimit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(inputClosingDate, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(22, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         jPanel3.setBorder(javax.swing.BorderFactory.createEtchedBorder());
@@ -450,6 +453,14 @@ public class RegisterCustomerForm extends javax.swing.JInternalFrame {
                 tableCustomerMouseClicked(evt);
             }
         });
+        tableCustomer.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                tableCustomerKeyPressed(evt);
+            }
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                tableCustomerKeyReleased(evt);
+            }
+        });
         jScrollPane1.setViewportView(tableCustomer);
         if (tableCustomer.getColumnModel().getColumnCount() > 0) {
             tableCustomer.getColumnModel().getColumn(0).setMinWidth(80);
@@ -590,7 +601,12 @@ public class RegisterCustomerForm extends javax.swing.JInternalFrame {
         // TODO add your handling code here:        
         DefaultTableModel model = (DefaultTableModel)tableCustomer.getModel();
         int selectedRowIndex = tableCustomer.getSelectedRow();
-        int qtdRows = tableCustomer.getSelectedRowCount();    
+        int qtdRows = tableCustomer.getSelectedRowCount();  
+        
+             System.out.println("selectedRowIndex:" + selectedRowIndex);
+        System.out.println("qtdRows:" + qtdRows); 
+
+        
         if(qtdRows == 1){
             setInitEditFields();            
             inputCode.setText(model.getValueAt(selectedRowIndex, 0).toString());
@@ -668,6 +684,8 @@ public class RegisterCustomerForm extends javax.swing.JInternalFrame {
         DefaultTableModel model = (DefaultTableModel)tableCustomer.getModel();
         int selectedRowIndex = tableCustomer.getSelectedRow();
         int qtdRows = tableCustomer.getSelectedRowCount();
+        
+        
         if(qtdRows == 1){
             int response = JOptionPane.showConfirmDialog(
                     this,
@@ -698,7 +716,7 @@ public class RegisterCustomerForm extends javax.swing.JInternalFrame {
                         clearFields();
                     } catch (HttpServerErrorException e) {
                         String errorMessage = extractErrorMessage(e.getResponseBodyAsString());
-                        JOptionPane.showMessageDialog(this, errorMessage, "Aviso de cliente Busca de cliente", JOptionPane.WARNING_MESSAGE);
+                        JOptionPane.showMessageDialog(this, errorMessage, "Aviso de busca", JOptionPane.WARNING_MESSAGE);
                     } catch (HeadlessException | RestClientException e) {
                         JOptionPane.showMessageDialog(this, "Erro inesperado: " + e.getMessage());
                     } 
@@ -707,6 +725,39 @@ public class RegisterCustomerForm extends javax.swing.JInternalFrame {
             JOptionPane.showMessageDialog(this, "Por favor selecione apenas um registro");
         }
     }//GEN-LAST:event_btnDeleteCustomerActionPerformed
+
+    private void tableCustomerKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tableCustomerKeyPressed
+        // TODO add your handling code here:
+       
+    }//GEN-LAST:event_tableCustomerKeyPressed
+
+    private void tableCustomerKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tableCustomerKeyReleased
+        System.out.println("aqui");
+        DefaultTableModel model = (DefaultTableModel)tableCustomer.getModel();
+        int selectedRowIndex = tableCustomer.getSelectedRow();
+        int qtdRows = tableCustomer.getSelectedRowCount(); 
+        System.out.println("selectedRowIndex:" + selectedRowIndex);
+        System.out.println("qtdRows:" + qtdRows);
+        if(qtdRows == 1){
+            setInitEditFields();            
+            inputCode.setText(model.getValueAt(selectedRowIndex, 0).toString());
+            inputCustomerName.setText(model.getValueAt(selectedRowIndex, 1).toString());
+            inputPurchaseLimit.setText(model.getValueAt(selectedRowIndex, 2).toString());
+            String inputClosingDateAmerican = model.getValueAt(selectedRowIndex, 3).toString();
+             try {
+                    SimpleDateFormat inputFormat = new SimpleDateFormat("dd/MM/yyyy");
+                    Date date = inputFormat.parse(inputClosingDateAmerican); 
+                    inputClosingDate.setDate(date);
+//                    inputClosingDate.setDateFormatString("dd/MM/yyyy");
+                    
+            } catch (ParseException ex) {
+                  ex.printStackTrace();
+            }
+        }if(qtdRows > 1){
+            JOptionPane.showMessageDialog(this, "Por favor selecione apenas um registro");
+            
+        }
+    }//GEN-LAST:event_tableCustomerKeyReleased
 
     
     // Variables declaration - do not modify//GEN-BEGIN:variables

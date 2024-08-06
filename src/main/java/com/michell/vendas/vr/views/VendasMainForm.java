@@ -4,6 +4,7 @@
  */
 package com.michell.vendas.vr.views;
 
+import com.michell.vendas.vr.utils.PositionForm;
 import java.awt.Graphics;
 import java.awt.Image;
 import javax.swing.ImageIcon;
@@ -13,6 +14,8 @@ import javax.swing.ImageIcon;
  * @author michell-bento
  */
 public class VendasMainForm extends javax.swing.JFrame {
+    
+    PositionForm positionForm = new PositionForm();
 
     /**
      * Creates new form VendasMainForm
@@ -81,6 +84,11 @@ public class VendasMainForm extends javax.swing.JFrame {
         menuProduct.setFont(new java.awt.Font("Liberation Sans", 1, 15)); // NOI18N
         menuProduct.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/Application-x-deb.svg.png"))); // NOI18N
         menuProduct.setText("Produtos");
+        menuProduct.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuProductActionPerformed(evt);
+            }
+        });
         jMenu1.add(menuProduct);
 
         menuPurchaseOrder.setFont(new java.awt.Font("Liberation Sans", 1, 15)); // NOI18N
@@ -94,8 +102,7 @@ public class VendasMainForm extends javax.swing.JFrame {
         jMenu1.add(menuPurchaseOrder);
         jMenu1.add(jSeparator1);
 
-        menuExit.setFont(new java.awt.Font("Liberation Sans", 1, 24)); // NOI18N
-        menuExit.setForeground(new java.awt.Color(255, 153, 0));
+        menuExit.setFont(new java.awt.Font("Liberation Sans", 1, 15)); // NOI18N
         menuExit.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/exit-icon-2.png"))); // NOI18N
         menuExit.setText("Sair");
         menuExit.addActionListener(new java.awt.event.ActionListener() {
@@ -126,14 +133,17 @@ public class VendasMainForm extends javax.swing.JFrame {
 
     private void menuPurchaseOrderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuPurchaseOrderActionPerformed
         // TODO add your handling code here:
+        RegisterPurchaserOrderForm formPurchaserOrder = new RegisterPurchaserOrderForm();
+        positionForm.openForm(formPurchaserOrder  , desktopPane);
     }//GEN-LAST:event_menuPurchaseOrderActionPerformed
 
     private void menuClientActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuClientActionPerformed
         // TODO add your handling code here:
         RegisterCustomerForm formCustomer = new RegisterCustomerForm();
-        desktopPane.add(formCustomer);
-        formCustomer.setVisible(rootPaneCheckingEnabled);
-        
+//        desktopPane.add(formCustomer);
+//        formCustomer.setVisible(rootPaneCheckingEnabled);
+//        PositionForm positionForm = new PositionForm();
+        positionForm.openForm(formCustomer  , desktopPane);
     
     }//GEN-LAST:event_menuClientActionPerformed
 
@@ -141,6 +151,12 @@ public class VendasMainForm extends javax.swing.JFrame {
         // TODO add your handling code here:
         dispose();
     }//GEN-LAST:event_menuExitActionPerformed
+
+    private void menuProductActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuProductActionPerformed
+        // TODO add your handling code here:
+        RegisterProductForm formProduct = new RegisterProductForm();
+        positionForm.openForm(formProduct  , desktopPane);
+    }//GEN-LAST:event_menuProductActionPerformed
 
     /**
      * @param args the command line arguments
