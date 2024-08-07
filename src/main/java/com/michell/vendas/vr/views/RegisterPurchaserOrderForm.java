@@ -6,15 +6,19 @@ package com.michell.vendas.vr.views;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.michell.vendas.vr.dtos.CustomerDTO;
 
 import com.michell.vendas.vr.dtos.ProductDTO;
 import com.michell.vendas.vr.dtos.ResponseDTO;
+import com.michell.vendas.vr.dtos.RetrieveAllCustomersDTO;
 
 import com.michell.vendas.vr.dtos.RetrieveAllProductsDTO;
 import java.awt.HeadlessException;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
@@ -33,14 +37,18 @@ import org.springframework.web.client.RestTemplate;
  */
 public class RegisterPurchaserOrderForm extends javax.swing.JInternalFrame {
     
+    private static final String CUSTOMER_URL = "http://localhost:8080/customer/";
     private static final String PURCHASER_ORDER_URL = "http://localhost:8080/purchaserOrder/";
+    
+    CustomerDTO customerDtoToPurchaser = new CustomerDTO();
 
     /**
      * Creates new form RegisterProductForm
      */
     public RegisterPurchaserOrderForm() {
         initComponents();
-//        loadProducts(); 
+        loadCustomers(); 
+         
     }
     
 //      public void clearFields(){
@@ -94,26 +102,40 @@ public class RegisterPurchaserOrderForm extends javax.swing.JInternalFrame {
 //         setInitSaveFields();
 //    }
     
-//    public void loadProducts(){
-//        RestTemplate restTemplate = new RestTemplate();
-//
-//        RetrieveAllProductsDTO productsDto = restTemplate.exchange(PRODUCT_URL,
-//            HttpMethod.GET,
-//            null,
-//            new ParameterizedTypeReference<RetrieveAllProductsDTO>() {}
-//        ).getBody();
-//        
-//        if (productsDto != null) {
-//                DefaultTableModel tableModelCustomers = (DefaultTableModel) tableProduct.getModel();
-//                tableModelCustomers.setRowCount(0); //limpa os dados
-//                for (ProductDTO product : productsDto.getProducts()) {                    
-//                    Long id = product.getId();
-//                    String description = product.getDescription();
-//                    Double price = product.getPrice();
-//                    tableModelCustomers.addRow(new Object[]{id, description, price});
-//                }
-//        }      
-//    }
+  public void loadCustomers(){
+        RestTemplate restTemplate = new RestTemplate();
+
+        RetrieveAllCustomersDTO customersDto = restTemplate.exchange(CUSTOMER_URL,
+            HttpMethod.GET,
+            null,
+            new ParameterizedTypeReference<RetrieveAllCustomersDTO>() {}
+        ).getBody();
+        
+        if (customersDto != null) {
+                DefaultTableModel tableModelCustomers = (DefaultTableModel) tableCustomerToPurchaser.getModel();
+                tableModelCustomers.setRowCount(0); //limpa os dados
+                for (CustomerDTO customer : customersDto.getCustomers()) {                    
+                    Long id = customer.getId();
+                    String customerName = customer.getCustomerName();
+                    LocalDate closingDate = customer.getClosingDateAt();
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+                    String formattedDate = closingDate.format(formatter);
+                    Double purchaseLimit = customer.getPurchaseLimit();
+                    tableModelCustomers.addRow(new Object[]{id, customerName,purchaseLimit,formattedDate});
+                }
+        }
+        // imprimir no console
+        if (customersDto != null) {
+            System.out.println("Success: " + customersDto.getMessage().isSuccess());
+            System.out.println("Details: " + customersDto.getMessage().getDetails());
+            for (CustomerDTO customer : customersDto.getCustomers()) {
+                System.out.println("Customer ID: " + customer.getId());
+                System.out.println("Customer Name: " + customer.getCustomerName());
+                System.out.println("Purchase Limit: " + customer.getPurchaseLimit());
+                System.out.println("Closing Date: " + customer.getClosingDateAt());
+            }
+        }
+    }
 //      
 //    private String extractErrorMessage(String responseBody) {
 //        ObjectMapper objectMapper = new ObjectMapper();
@@ -141,27 +163,29 @@ public class RegisterPurchaserOrderForm extends javax.swing.JInternalFrame {
         jPanel2 = new javax.swing.JPanel();
         jLabel5 = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
-        btnDeleteProduct = new javax.swing.JButton();
-        btnCancelProduct = new javax.swing.JButton();
-        btnUpdateProduct = new javax.swing.JButton();
-        btnSaveProduct = new javax.swing.JButton();
-        btnNewProduct = new javax.swing.JButton();
-        jPanel4 = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
-        inputSearchProduct = new javax.swing.JTextField();
-        jLabel7 = new javax.swing.JLabel();
+        btnCancelAddCustomer = new javax.swing.JButton();
+        btnAddCustomer = new javax.swing.JButton();
         jPanel6 = new javax.swing.JPanel();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        tableCustomer1 = new javax.swing.JTable();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        tableCustomerToPurchaser = new javax.swing.JTable();
         jPanel7 = new javax.swing.JPanel();
         jScrollPane3 = new javax.swing.JScrollPane();
         tableCustomer2 = new javax.swing.JTable();
         jPanel1 = new javax.swing.JPanel();
-        inputCustomerName = new javax.swing.JTextField();
-        jLabel3 = new javax.swing.JLabel();
+        inputCustomerNameToPurchaser = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
+        closingDateText = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
+        codeText = new javax.swing.JLabel();
+        purchaseLimitText = new javax.swing.JLabel();
+        jLabel7 = new javax.swing.JLabel();
+        purchaseLimitTextToOrder = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
-        jLabel9 = new javax.swing.JLabel();
+        nameOrder = new javax.swing.JLabel();
+        btnSavePurchaserOrder = new javax.swing.JButton();
+        btnCancelPurchaserOrder = new javax.swing.JButton();
+        btnAddProduct = new javax.swing.JButton();
 
         jPanel5.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
@@ -252,58 +276,28 @@ public class RegisterPurchaserOrderForm extends javax.swing.JInternalFrame {
 
         jPanel3.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
-        btnDeleteProduct.setBackground(new java.awt.Color(255, 153, 102));
-        btnDeleteProduct.setFont(new java.awt.Font("Liberation Sans", 1, 15)); // NOI18N
-        btnDeleteProduct.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/trash-icon-vr.png"))); // NOI18N
-        btnDeleteProduct.setText("Excluir");
-        btnDeleteProduct.setEnabled(false);
-        btnDeleteProduct.addActionListener(new java.awt.event.ActionListener() {
+        btnCancelAddCustomer.setBackground(new java.awt.Color(255, 153, 102));
+        btnCancelAddCustomer.setFont(new java.awt.Font("Liberation Sans", 1, 24)); // NOI18N
+        btnCancelAddCustomer.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/clear-icon-vr.png"))); // NOI18N
+        btnCancelAddCustomer.setText("Cancelar");
+        btnCancelAddCustomer.setEnabled(false);
+        btnCancelAddCustomer.setMaximumSize(new java.awt.Dimension(264, 68));
+        btnCancelAddCustomer.setMinimumSize(new java.awt.Dimension(264, 68));
+        btnCancelAddCustomer.setPreferredSize(new java.awt.Dimension(264, 38));
+        btnCancelAddCustomer.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnDeleteProductActionPerformed(evt);
+                btnCancelAddCustomerActionPerformed(evt);
             }
         });
 
-        btnCancelProduct.setBackground(new java.awt.Color(255, 153, 102));
-        btnCancelProduct.setFont(new java.awt.Font("Liberation Sans", 1, 15)); // NOI18N
-        btnCancelProduct.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/clear-icon-vr.png"))); // NOI18N
-        btnCancelProduct.setText("Cancelar");
-        btnCancelProduct.setEnabled(false);
-        btnCancelProduct.addActionListener(new java.awt.event.ActionListener() {
+        btnAddCustomer.setBackground(new java.awt.Color(255, 153, 0));
+        btnAddCustomer.setFont(new java.awt.Font("Liberation Sans", 1, 24)); // NOI18N
+        btnAddCustomer.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/plus-icon-vr.png"))); // NOI18N
+        btnAddCustomer.setText("Adicionar Cliente");
+        btnAddCustomer.setEnabled(false);
+        btnAddCustomer.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnCancelProductActionPerformed(evt);
-            }
-        });
-
-        btnUpdateProduct.setBackground(new java.awt.Color(255, 153, 102));
-        btnUpdateProduct.setFont(new java.awt.Font("Liberation Sans", 1, 15)); // NOI18N
-        btnUpdateProduct.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/pencil-icon-vr.png"))); // NOI18N
-        btnUpdateProduct.setText("Atualizar");
-        btnUpdateProduct.setEnabled(false);
-        btnUpdateProduct.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnUpdateProductActionPerformed(evt);
-            }
-        });
-
-        btnSaveProduct.setBackground(new java.awt.Color(255, 153, 0));
-        btnSaveProduct.setFont(new java.awt.Font("Liberation Sans", 1, 15)); // NOI18N
-        btnSaveProduct.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/save-icon-3d-vr.png"))); // NOI18N
-        btnSaveProduct.setText("Salvar");
-        btnSaveProduct.setEnabled(false);
-        btnSaveProduct.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnSaveProductActionPerformed(evt);
-            }
-        });
-
-        btnNewProduct.setBackground(new java.awt.Color(255, 153, 0));
-        btnNewProduct.setFont(new java.awt.Font("Liberation Sans", 1, 24)); // NOI18N
-        btnNewProduct.setForeground(new java.awt.Color(255, 255, 255));
-        btnNewProduct.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/plus-icon-vr.png"))); // NOI18N
-        btnNewProduct.setText("Adicionar Cliente");
-        btnNewProduct.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnNewProductActionPerformed(evt);
+                btnAddCustomerActionPerformed(evt);
             }
         });
 
@@ -314,73 +308,23 @@ public class RegisterPurchaserOrderForm extends javax.swing.JInternalFrame {
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addComponent(btnSaveProduct, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnDeleteProduct, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addComponent(btnCancelProduct, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnUpdateProduct, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(btnNewProduct, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(btnAddCustomer, javax.swing.GroupLayout.DEFAULT_SIZE, 286, Short.MAX_VALUE)
+                    .addComponent(btnCancelAddCustomer, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(btnSaveProduct, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnDeleteProduct, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(btnCancelAddCustomer, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(btnCancelProduct, javax.swing.GroupLayout.DEFAULT_SIZE, 45, Short.MAX_VALUE)
-                    .addComponent(btnUpdateProduct, javax.swing.GroupLayout.DEFAULT_SIZE, 45, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(btnNewProduct, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnAddCustomer, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
-        );
-
-        jPanel4.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-
-        jLabel1.setFont(new java.awt.Font("Liberation Sans", 0, 15)); // NOI18N
-        jLabel1.setText("Pesquisa pelo nome do cliente");
-
-        inputSearchProduct.setEnabled(false);
-        inputSearchProduct.setRequestFocusEnabled(false);
-
-        jLabel7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/search-icon-vr.png"))); // NOI18N
-
-        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
-        jPanel4.setLayout(jPanel4Layout);
-        jPanel4Layout.setHorizontalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel4Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addComponent(inputSearchProduct))
-                .addContainerGap())
-        );
-        jPanel4Layout.setVerticalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel4Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jLabel7)
-                    .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGap(4, 4, 4)))
-                .addComponent(inputSearchProduct, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         jPanel6.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
-        tableCustomer1.setModel(new javax.swing.table.DefaultTableModel(
+        tableCustomerToPurchaser.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
@@ -403,20 +347,20 @@ public class RegisterPurchaserOrderForm extends javax.swing.JInternalFrame {
                 return canEdit [columnIndex];
             }
         });
-        tableCustomer1.addMouseListener(new java.awt.event.MouseAdapter() {
+        tableCustomerToPurchaser.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                tableCustomer1MouseClicked(evt);
+                tableCustomerToPurchaserMouseClicked(evt);
             }
         });
-        tableCustomer1.addKeyListener(new java.awt.event.KeyAdapter() {
+        tableCustomerToPurchaser.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
-                tableCustomer1KeyPressed(evt);
+                tableCustomerToPurchaserKeyPressed(evt);
             }
             public void keyReleased(java.awt.event.KeyEvent evt) {
-                tableCustomer1KeyReleased(evt);
+                tableCustomerToPurchaserKeyReleased(evt);
             }
         });
-        jScrollPane2.setViewportView(tableCustomer1);
+        jScrollPane4.setViewportView(tableCustomerToPurchaser);
 
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
@@ -424,15 +368,15 @@ public class RegisterPurchaserOrderForm extends javax.swing.JInternalFrame {
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel6Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 708, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(22, Short.MAX_VALUE))
+                .addComponent(jScrollPane4)
+                .addContainerGap())
         );
         jPanel6Layout.setVerticalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel6Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 232, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(83, Short.MAX_VALUE))
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 232, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         jPanel7.setBorder(javax.swing.BorderFactory.createEtchedBorder());
@@ -480,42 +424,49 @@ public class RegisterPurchaserOrderForm extends javax.swing.JInternalFrame {
         jPanel7Layout.setHorizontalGroup(
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel7Layout.createSequentialGroup()
-                .addGap(29, 29, 29)
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 685, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap()
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 732, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(11, Short.MAX_VALUE))
         );
         jPanel7Layout.setVerticalGroup(
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel7Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 232, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(67, Short.MAX_VALUE))
+                .addContainerGap(24, Short.MAX_VALUE))
         );
 
         jPanel1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
-        inputCustomerName.setText("Michell Adam Bento");
-        inputCustomerName.setEnabled(false);
-        inputCustomerName.addActionListener(new java.awt.event.ActionListener() {
+        inputCustomerNameToPurchaser.setText("XXXXXXXXXXXXXX");
+        inputCustomerNameToPurchaser.setEnabled(false);
+        inputCustomerNameToPurchaser.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                inputCustomerNameActionPerformed(evt);
+                inputCustomerNameToPurchaserActionPerformed(evt);
             }
         });
-
-        jLabel3.setFont(new java.awt.Font("Liberation Sans", 1, 15)); // NOI18N
-        jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel3.setText("Limite de compra ");
 
         jLabel4.setFont(new java.awt.Font("Liberation Sans", 0, 15)); // NOI18N
         jLabel4.setText("Data de fechamento");
 
-        jLabel8.setFont(new java.awt.Font("Liberation Sans", 2, 14)); // NOI18N
-        jLabel8.setForeground(new java.awt.Color(102, 102, 102));
-        jLabel8.setText("06/07/2024");
+        closingDateText.setFont(new java.awt.Font("Liberation Sans", 2, 14)); // NOI18N
+        closingDateText.setForeground(new java.awt.Color(102, 102, 102));
+        closingDateText.setText("dd/MM/yyyy");
 
-        jLabel9.setFont(new java.awt.Font("Liberation Sans", 1, 52)); // NOI18N
-        jLabel9.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel9.setText("R$ 200,00");
+        jLabel6.setFont(new java.awt.Font("Liberation Sans", 0, 15)); // NOI18N
+        jLabel6.setText("Código:  ");
+
+        codeText.setFont(new java.awt.Font("Liberation Sans", 2, 14)); // NOI18N
+        codeText.setForeground(new java.awt.Color(102, 102, 102));
+        codeText.setText("xxxxxxxxxxxx");
+
+        purchaseLimitText.setFont(new java.awt.Font("Liberation Sans", 1, 52)); // NOI18N
+        purchaseLimitText.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        purchaseLimitText.setText("R$ 000,00");
+
+        jLabel7.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
+        jLabel7.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLabel7.setText("Limite de compra ");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -524,34 +475,101 @@ public class RegisterPurchaserOrderForm extends javax.swing.JInternalFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel9, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                                .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(140, 140, 140))))
-                    .addComponent(inputCustomerName))
+                    .addComponent(inputCustomerNameToPurchaser)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(closingDateText, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(49, 49, 49)
+                        .addComponent(jLabel6)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(codeText, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
+            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel1Layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(purchaseLimitText, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addContainerGap()))
+            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                    .addContainerGap(257, Short.MAX_VALUE)
+                    .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 201, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGap(16, 16, 16)))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel3)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGap(18, 18, 18)
-                .addComponent(inputCustomerName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(115, 115, 115)
+                .addComponent(inputCustomerNameToPurchaser, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
-                    .addComponent(jLabel8))
-                .addGap(15, 15, 15))
+                    .addComponent(closingDateText)
+                    .addComponent(jLabel6)
+                    .addComponent(codeText))
+                .addContainerGap())
+            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel1Layout.createSequentialGroup()
+                    .addGap(52, 52, 52)
+                    .addComponent(purchaseLimitText)
+                    .addContainerGap(56, Short.MAX_VALUE)))
+            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel1Layout.createSequentialGroup()
+                    .addGap(16, 16, 16)
+                    .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addContainerGap(123, Short.MAX_VALUE)))
         );
+
+        purchaseLimitTextToOrder.setFont(new java.awt.Font("Liberation Sans", 1, 40)); // NOI18N
+        purchaseLimitTextToOrder.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        purchaseLimitTextToOrder.setText("XXXXXX");
+
+        jLabel3.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
+        jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLabel3.setText("TOTAL");
+
+        jLabel8.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
+        jLabel8.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        jLabel8.setText("Dados do Pedido de Compra");
+
+        nameOrder.setFont(new java.awt.Font("Liberation Sans", 1, 30)); // NOI18N
+        nameOrder.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        nameOrder.setText("XXXXXXXXX");
+
+        btnSavePurchaserOrder.setBackground(new java.awt.Color(255, 153, 0));
+        btnSavePurchaserOrder.setFont(new java.awt.Font("Liberation Sans", 1, 15)); // NOI18N
+        btnSavePurchaserOrder.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/save-icon-3d-vr.png"))); // NOI18N
+        btnSavePurchaserOrder.setText("Fechar Pedido");
+        btnSavePurchaserOrder.setEnabled(false);
+        btnSavePurchaserOrder.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSavePurchaserOrderActionPerformed(evt);
+            }
+        });
+
+        btnCancelPurchaserOrder.setBackground(new java.awt.Color(255, 153, 102));
+        btnCancelPurchaserOrder.setFont(new java.awt.Font("Liberation Sans", 1, 15)); // NOI18N
+        btnCancelPurchaserOrder.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/clear-icon-vr.png"))); // NOI18N
+        btnCancelPurchaserOrder.setText("Cancelar Pedido");
+        btnCancelPurchaserOrder.setEnabled(false);
+        btnCancelPurchaserOrder.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCancelPurchaserOrderActionPerformed(evt);
+            }
+        });
+
+        btnAddProduct.setBackground(new java.awt.Color(255, 153, 0));
+        btnAddProduct.setFont(new java.awt.Font("Liberation Sans", 1, 15)); // NOI18N
+        btnAddProduct.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/plus-icon-vr.png"))); // NOI18N
+        btnAddProduct.setText("Adicionar Produto");
+        btnAddProduct.setEnabled(false);
+        btnAddProduct.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        btnAddProduct.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAddProductActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -559,19 +577,37 @@ public class RegisterPurchaserOrderForm extends javax.swing.JInternalFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(btnSavePurchaserOrder, javax.swing.GroupLayout.PREFERRED_SIZE, 232, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(26, 26, 26)
-                        .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, 704, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addGroup(layout.createSequentialGroup()
-                            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                            .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                .addContainerGap(18, Short.MAX_VALUE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addGroup(layout.createSequentialGroup()
+                                    .addGap(482, 482, 482)
+                                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 271, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(jPanel7, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                    .addComponent(btnAddProduct, javax.swing.GroupLayout.PREFERRED_SIZE, 201, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(purchaseLimitTextToOrder, javax.swing.GroupLayout.PREFERRED_SIZE, 226, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(nameOrder, javax.swing.GroupLayout.PREFERRED_SIZE, 510, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(btnCancelPurchaserOrder, javax.swing.GroupLayout.PREFERRED_SIZE, 232, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                .addContainerGap(16, Short.MAX_VALUE))
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                    .addContainerGap(810, Short.MAX_VALUE)
+                    .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 258, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGap(512, 512, 512)))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -580,151 +616,86 @@ public class RegisterPurchaserOrderForm extends javax.swing.JInternalFrame {
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 3, Short.MAX_VALUE))
-                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(20, 20, 20))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(53, 53, 53)
+                                .addComponent(nameOrder)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(btnAddProduct, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(6, 6, 6)
+                                .addComponent(btnSavePurchaserOrder, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(btnCancelPurchaserOrder, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(purchaseLimitTextToOrder)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(25, 25, 25)))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jPanel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(162, 162, 162))
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                    .addGap(100, 100, 100)
+                    .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addContainerGap(586, Short.MAX_VALUE)))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btnDeleteProductActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteProductActionPerformed
-//        DefaultTableModel model = (DefaultTableModel)tableProduct.getModel();
-//        int selectedRowIndex = tableProduct.getSelectedRow();
-//        int qtdRows = tableProduct.getSelectedRowCount();
-//        
-//        
-//        if(qtdRows == 1){
-//            int response = JOptionPane.showConfirmDialog(
-//                    this,
-//                    "Você tem a certeza que deseja excluir esse produto?",
-//                    "Confirmar Exclusão de Produto",
-//                    JOptionPane.YES_NO_OPTION,
-//                    2,
-//                    null                  
-//                    );
-//            if (response == JOptionPane.YES_OPTION){
-//                setInitEditFields();
-//                Long productId = Long.parseLong(model.getValueAt(selectedRowIndex, 0).toString());
-//                RestTemplate restTemplate = new RestTemplate();
-//                String urlDelete = PRODUCT_URL + productId + "/";
-//                
-//                  try {
-//                        ResponseEntity<ResponseDTO> responseEntity = restTemplate.exchange(
-//                            urlDelete,
-//                            HttpMethod.DELETE,
-//                            HttpEntity.EMPTY,
-//                            ResponseDTO.class
-//                        );
-//                        ResponseDTO deleteResponse = responseEntity.getBody();
-//                        JOptionPane.showMessageDialog(this, deleteResponse.getMessage().getDetails());
-//                        loadProducts();
-//                        setInitSaveFields();
-//                        clearFields();
-//                    } catch (HttpServerErrorException e) {
-//                        String errorMessage = extractErrorMessage(e.getResponseBodyAsString());
-//                        JOptionPane.showMessageDialog(this, errorMessage, "Aviso de busca", JOptionPane.WARNING_MESSAGE);
-//                    } catch (HeadlessException | RestClientException e) {
-//                        JOptionPane.showMessageDialog(this, "Erro inesperado: " + e.getMessage());
-//                    } 
-//            }
-//        }if(qtdRows > 1){
-//            JOptionPane.showMessageDialog(this, "Por favor selecione apenas um registro");
-//        }
-    }//GEN-LAST:event_btnDeleteProductActionPerformed
+    private void btnCancelAddCustomerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelAddCustomerActionPerformed
+        btnCancelAddCustomer.setEnabled(false);
+        btnAddCustomer.setEnabled(false);
+//        tableCustomerToPurchaser.setRowSelectionAllowed(true);
+//        tableCustomerToPurchaser.setColumnSelectionAllowed(true);
+//        tableCustomerToPurchaser.setCellSelectionEnabled(true);
+        tableCustomerToPurchaser.setEnabled(true);
+        purchaseLimitText.setText("R$ 000,00");
+        inputCustomerNameToPurchaser.setText("XXXXXXXXXXXXXX");
+        closingDateText.setText("dd/MM/yyyy");
+        codeText.setText("xxxxxxxxxxxx");
+        
+        tableCustomerToPurchaser.getSelectionModel().clearSelection();
+        tableCustomerToPurchaser.repaint();
+    }//GEN-LAST:event_btnCancelAddCustomerActionPerformed
 
-    private void btnCancelProductActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelProductActionPerformed
-//          setInitCancelFields();
-//           clearFields();
-    }//GEN-LAST:event_btnCancelProductActionPerformed
+    private void btnAddCustomerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddCustomerActionPerformed
+        btnCancelAddCustomer.setEnabled(false);
+        btnAddCustomer.setEnabled(false);
+        tableCustomerToPurchaser.setEnabled(false);
+        tableCustomerToPurchaser.getSelectionModel().clearSelection();
+        tableCustomerToPurchaser.repaint();
+               
 
-    private void btnUpdateProductActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateProductActionPerformed
-//        // TODO add your handling code here:
-//        int selectedRowIndex = tableProduct.getSelectedRow();
-//        int qtdRows = tableProduct.getSelectedRowCount();
-//        if(qtdRows == 1){
-//            DefaultTableModel model = (DefaultTableModel)tableProduct.getModel();
-//            setInitEditFields();
-//            Long productIdToUpdate = Long.parseLong(model.getValueAt(selectedRowIndex, 0).toString());
-//            RestTemplate restTemplate = new RestTemplate();
-//            
-//            
-//            ProductDTO productDTO = new ProductDTO();
-//            productDTO.setId(productIdToUpdate);
-//            productDTO.setDescription(inputDescription.getText());
-//            productDTO.setPrice(Double.parseDouble(inputPrice.getText()));
-//            
-//            HttpHeaders headers = new HttpHeaders();
-//            headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
-//            
-//            HttpEntity<ProductDTO> request = new HttpEntity<>(productDTO, headers);
-//            try {
-//            
-//                ResponseEntity<ResponseDTO> response = restTemplate.exchange(
-//                PRODUCT_URL,
-//                HttpMethod.PUT,
-//                request,
-//                ResponseDTO.class
-//            ); 
-//
-//            JOptionPane.showMessageDialog(this, response.getBody().getMessage().getDetails());
-//            loadProducts();
-//            setInitSaveFields();
-//            clearFields();
-//            
-//            } catch (HttpServerErrorException e) {
-//                String errorMessage = extractErrorMessage(e.getResponseBodyAsString());
-//                JOptionPane.showMessageDialog(this, errorMessage, "Aviso de cliente não encontrado", JOptionPane.WARNING_MESSAGE);
-//            } catch (HeadlessException | RestClientException e) {
-//                JOptionPane.showMessageDialog(this, "Erro inesperado: " + e.getMessage());
-//            }    
-//
-//        }if(qtdRows > 1){
-//            JOptionPane.showMessageDialog(this, "Por favor selecione apenas um registro");
-//        }
-    }//GEN-LAST:event_btnUpdateProductActionPerformed
+        btnSavePurchaserOrder.setEnabled(true);
+        btnCancelPurchaserOrder.setEnabled(true);
+        btnAddProduct.setEnabled(true);
+        
+        //        fazer utlitite
+        String purchaseLimit = purchaseLimitText.getText().replaceAll("\\s+", "").replace("R$", "");  
+        
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        LocalDate date = LocalDate.parse(closingDateText.getText(), formatter);
+      
+         
 
-    private void btnSaveProductActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveProductActionPerformed
-//        RestTemplate restTemplate = new RestTemplate();
-//        ProductDTO productDTO = new ProductDTO();
-//        productDTO.setDescription(inputDescription.getText());
-//        productDTO.setPrice(Double.parseDouble(inputPrice.getText()));
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
-//        HttpEntity<ProductDTO> request = new HttpEntity<>(productDTO, headers);
-//        try {
-//            
-//                ResponseEntity<ResponseDTO> response = restTemplate.exchange(
-//                PRODUCT_URL,
-//                HttpMethod.POST,
-//                request,
-//                ResponseDTO.class
-//            ); 
-//
-//            JOptionPane.showMessageDialog(this, response.getBody().getMessage().getDetails());
-//            loadProducts();
-//            setInitSaveFields();
-//            clearFields();
-//            
-//        } catch (HttpServerErrorException e) {
-//            String errorMessage = extractErrorMessage(e.getResponseBodyAsString());
-//            JOptionPane.showMessageDialog(this, errorMessage, "Aviso de cliente já existente", JOptionPane.WARNING_MESSAGE);
-//        } catch (HeadlessException | RestClientException e) {
-//            JOptionPane.showMessageDialog(this, "Erro inesperado: " + e.getMessage());
-//        }       
-    }//GEN-LAST:event_btnSaveProductActionPerformed
-
-    private void btnNewProductActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNewProductActionPerformed
-        // TODO add your handling code here:
-//        setInitNewFields();
-    }//GEN-LAST:event_btnNewProductActionPerformed
+       
+          
+        customerDtoToPurchaser.setId(Long.parseLong(codeText.getText()));
+        customerDtoToPurchaser.setCustomerName(inputCustomerNameToPurchaser.getText());
+        customerDtoToPurchaser.setPurchaseLimit(Double.parseDouble(purchaseLimit));
+        customerDtoToPurchaser.setClosingDateAt(date);
+        nameOrder.setText(customerDtoToPurchaser.getCustomerName());
+       
+    }//GEN-LAST:event_btnAddCustomerActionPerformed
 
     private void tableCustomerMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableCustomerMouseClicked
         // TODO add your handling code here:
@@ -789,18 +760,6 @@ public class RegisterPurchaserOrderForm extends javax.swing.JInternalFrame {
 //        }
     }//GEN-LAST:event_tableCustomerKeyReleased
 
-    private void tableCustomer1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableCustomer1MouseClicked
-        // TODO add your handling code here:
-    }//GEN-LAST:event_tableCustomer1MouseClicked
-
-    private void tableCustomer1KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tableCustomer1KeyPressed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_tableCustomer1KeyPressed
-
-    private void tableCustomer1KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tableCustomer1KeyReleased
-        // TODO add your handling code here:
-    }//GEN-LAST:event_tableCustomer1KeyReleased
-
     private void tableCustomer2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableCustomer2MouseClicked
         // TODO add your handling code here:
     }//GEN-LAST:event_tableCustomer2MouseClicked
@@ -813,39 +772,135 @@ public class RegisterPurchaserOrderForm extends javax.swing.JInternalFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_tableCustomer2KeyReleased
 
-    private void inputCustomerNameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_inputCustomerNameActionPerformed
+    private void inputCustomerNameToPurchaserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_inputCustomerNameToPurchaserActionPerformed
         // TODO add your handling code here:
 
-    }//GEN-LAST:event_inputCustomerNameActionPerformed
+    }//GEN-LAST:event_inputCustomerNameToPurchaserActionPerformed
+
+    private void tableCustomerToPurchaserMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableCustomerToPurchaserMouseClicked
+        DefaultTableModel model = (DefaultTableModel)tableCustomerToPurchaser.getModel();
+        int selectedRowIndex = tableCustomerToPurchaser.getSelectedRow();
+        int qtdRows = tableCustomerToPurchaser.getSelectedRowCount();  
+        
+        
+        if(qtdRows == 1){
+            btnAddCustomer.setEnabled(true);
+            btnCancelAddCustomer.setEnabled(true);
+//            setInitEditFields();            
+            codeText.setText(model.getValueAt(selectedRowIndex, 0).toString());
+            inputCustomerNameToPurchaser.setText(model.getValueAt(selectedRowIndex, 1).toString());
+            purchaseLimitText.setText("R$ " + model.getValueAt(selectedRowIndex, 2).toString());
+            closingDateText.setText(model.getValueAt(selectedRowIndex, 3).toString());
+        }if(qtdRows > 1){
+            JOptionPane.showMessageDialog(this, "Por favor selecione apenas um registro");
+            
+        }
+    }//GEN-LAST:event_tableCustomerToPurchaserMouseClicked
+
+    private void tableCustomerToPurchaserKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tableCustomerToPurchaserKeyPressed
+        // TODO add your handling code here:
+
+    }//GEN-LAST:event_tableCustomerToPurchaserKeyPressed
+
+    private void tableCustomerToPurchaserKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tableCustomerToPurchaserKeyReleased
+         DefaultTableModel model = (DefaultTableModel)tableCustomerToPurchaser.getModel();
+        int selectedRowIndex = tableCustomerToPurchaser.getSelectedRow();
+        int qtdRows = tableCustomerToPurchaser.getSelectedRowCount();  
+        
+        
+        if(qtdRows == 1){
+            btnAddCustomer.setEnabled(true);
+            btnCancelAddCustomer.setEnabled(true);
+//            setInitEditFields();            
+            codeText.setText(model.getValueAt(selectedRowIndex, 0).toString());
+            inputCustomerNameToPurchaser.setText(model.getValueAt(selectedRowIndex, 1).toString());
+            purchaseLimitText.setText("R$ " + model.getValueAt(selectedRowIndex, 2).toString());
+            closingDateText.setText(model.getValueAt(selectedRowIndex, 3).toString());
+        }if(qtdRows > 1){
+            JOptionPane.showMessageDialog(this, "Por favor selecione apenas um registro");
+            
+        }
+    }//GEN-LAST:event_tableCustomerToPurchaserKeyReleased
+
+    private void btnSavePurchaserOrderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSavePurchaserOrderActionPerformed
+
+//        RestTemplate restTemplate = new RestTemplate();
+//
+//        Date date = inputClosingDate.getDate();
+//        Instant instant = date.toInstant();
+//        LocalDate closingDateAt = instant.atZone(ZoneId.systemDefault()).toLocalDate();
+//
+//        CustomerDTO customersDTO = new CustomerDTO();
+//        customersDTO.setCustomerName(inputCustomerName.getText());
+//        customersDTO.setPurchaseLimit(Double.parseDouble(inputPurchaseLimit.getText()));
+//        customersDTO.setClosingDateAt(closingDateAt);
+//
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
+//        HttpEntity<CustomerDTO> request = new HttpEntity<>(customersDTO, headers);
+//        try {
+//
+//            ResponseEntity<ResponseDTO> response = restTemplate.exchange(
+//                CUSTOMER_URL,
+//                HttpMethod.POST,
+//                request,
+//                ResponseDTO.class
+//            );
+//
+//            JOptionPane.showMessageDialog(this, response.getBody().getMessage().getDetails());
+//            loadCustomers();
+//            setInitSaveFields();
+//            clearFields();
+//
+//        } catch (HttpServerErrorException e) {
+//            String errorMessage = extractErrorMessage(e.getResponseBodyAsString());
+//            JOptionPane.showMessageDialog(this, errorMessage, "Aviso de cliente já existente", JOptionPane.WARNING_MESSAGE);
+//        } catch (HeadlessException | RestClientException e) {
+//            JOptionPane.showMessageDialog(this, "Erro inesperado: " + e.getMessage());
+//        }
+
+    }//GEN-LAST:event_btnSavePurchaserOrderActionPerformed
+
+    private void btnCancelPurchaserOrderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelPurchaserOrderActionPerformed
+//        setInitCancelFields();
+//        clearFields();
+
+    }//GEN-LAST:event_btnCancelPurchaserOrderActionPerformed
+
+    private void btnAddProductActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddProductActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnAddProductActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnCancelProduct;
-    private javax.swing.JButton btnDeleteProduct;
-    private javax.swing.JButton btnNewProduct;
-    private javax.swing.JButton btnSaveProduct;
-    private javax.swing.JButton btnUpdateProduct;
-    private javax.swing.JTextField inputCustomerName;
-    private javax.swing.JTextField inputSearchProduct;
-    private javax.swing.JLabel jLabel1;
+    private javax.swing.JButton btnAddCustomer;
+    private javax.swing.JButton btnAddProduct;
+    private javax.swing.JButton btnCancelAddCustomer;
+    private javax.swing.JButton btnCancelPurchaserOrder;
+    private javax.swing.JButton btnSavePurchaserOrder;
+    private javax.swing.JLabel closingDateText;
+    private javax.swing.JLabel codeText;
+    private javax.swing.JTextField inputCustomerNameToPurchaser;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
-    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
-    private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane4;
+    private javax.swing.JLabel nameOrder;
+    private javax.swing.JLabel purchaseLimitText;
+    private javax.swing.JLabel purchaseLimitTextToOrder;
     private javax.swing.JTable tableCustomer;
-    private javax.swing.JTable tableCustomer1;
     private javax.swing.JTable tableCustomer2;
+    private javax.swing.JTable tableCustomerToPurchaser;
     // End of variables declaration//GEN-END:variables
 }
