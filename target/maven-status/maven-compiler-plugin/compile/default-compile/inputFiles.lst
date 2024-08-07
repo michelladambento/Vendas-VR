@@ -1,5 +1,4 @@
-/home/michell-bento/NetBeansProjects/Vendas-VR/src/main/java/com/michell/vendas/vr/dtos/ProductDTO.java
-/home/michell-bento/NetBeansProjects/Vendas-VR/src/main/java/com/michell/vendas/vr/views/RegisterProductForm.java
+/home/michell-bento/NetBeansProjects/Vendas-VR/src/main/java/com/michell/vendas/vr/dtos/ProductItemDTO.java
 /home/michell-bento/NetBeansProjects/Vendas-VR/src/main/java/com/michell/vendas/vr/views/VendasMainForm.java
 /home/michell-bento/NetBeansProjects/Vendas-VR/src/main/java/com/michell/vendas/vr/dtos/RetrieveAllProductsDTO.java
 /home/michell-bento/NetBeansProjects/Vendas-VR/src/main/java/com/michell/vendas/vr/dtos/MessageDTO.java
@@ -7,6 +6,10 @@
 /home/michell-bento/NetBeansProjects/Vendas-VR/src/main/java/com/michell/vendas/vr/dtos/CustomerDTO.java
 /home/michell-bento/NetBeansProjects/Vendas-VR/src/main/java/com/michell/vendas/vr/VendasVR.java
 /home/michell-bento/NetBeansProjects/Vendas-VR/src/main/java/com/michell/vendas/vr/views/RegisterCustomerForm.java
+/home/michell-bento/NetBeansProjects/Vendas-VR/src/main/java/com/michell/vendas/vr/views/RegisterPurchaserOrderForm.java
+/home/michell-bento/NetBeansProjects/Vendas-VR/src/main/java/com/michell/vendas/vr/dtos/ProductDTO.java
+/home/michell-bento/NetBeansProjects/Vendas-VR/src/main/java/com/michell/vendas/vr/views/RegisterProductForm.java
+/home/michell-bento/NetBeansProjects/Vendas-VR/src/main/java/com/michell/vendas/vr/dtos/PurchaseOrderDTO.java
+/home/michell-bento/NetBeansProjects/Vendas-VR/src/main/java/com/michell/vendas/vr/views/ProductDialog.java
 /home/michell-bento/NetBeansProjects/Vendas-VR/src/main/java/com/michell/vendas/vr/dtos/RetrieveAllCustomersDTO.java
 /home/michell-bento/NetBeansProjects/Vendas-VR/src/main/java/com/michell/vendas/vr/utils/PositionForm.java
-/home/michell-bento/NetBeansProjects/Vendas-VR/src/main/java/com/michell/vendas/vr/views/RegisterPurchaserOrderForm.java

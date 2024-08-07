@@ -4,31 +4,20 @@
  */
 package com.michell.vendas.vr.views;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.michell.vendas.vr.dtos.CustomerDTO;
-
 import com.michell.vendas.vr.dtos.ProductDTO;
-import com.michell.vendas.vr.dtos.ResponseDTO;
+
+import com.michell.vendas.vr.dtos.ProductItemDTO;
+import com.michell.vendas.vr.dtos.PurchaseOrderDTO;
 import com.michell.vendas.vr.dtos.RetrieveAllCustomersDTO;
 
-import com.michell.vendas.vr.dtos.RetrieveAllProductsDTO;
-import java.awt.HeadlessException;
-import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
+import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.HttpServerErrorException;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 /**
@@ -40,7 +29,13 @@ public class RegisterPurchaserOrderForm extends javax.swing.JInternalFrame {
     private static final String CUSTOMER_URL = "http://localhost:8080/customer/";
     private static final String PURCHASER_ORDER_URL = "http://localhost:8080/purchaserOrder/";
     
+    PurchaseOrderDTO purchaseOrderDTO = new PurchaseOrderDTO();
     CustomerDTO customerDtoToPurchaser = new CustomerDTO();
+    ProductItemDTO productItemDTOToPurchaser = new ProductItemDTO();
+    ProductDTO ProductDTOToPurchaser = new ProductDTO();
+    
+    
+    ProductDialog productDialog = new ProductDialog(null,closable);
 
     /**
      * Creates new form RegisterProductForm
@@ -599,7 +594,8 @@ public class RegisterPurchaserOrderForm extends javax.swing.JInternalFrame {
         tableCustomerToPurchaser.setEnabled(false);
         tableCustomerToPurchaser.getSelectionModel().clearSelection();
         tableCustomerToPurchaser.repaint();
-               
+        tableCustomerToPurchaser.setVisible(false);
+        tableCustomerToPurchaser.setOpaque(false);
 
         btnSavePurchaserOrder.setEnabled(true);
         btnCancelPurchaserOrder.setEnabled(true);
@@ -616,6 +612,8 @@ public class RegisterPurchaserOrderForm extends javax.swing.JInternalFrame {
         customerDtoToPurchaser.setPurchaseLimit(Double.parseDouble(purchaseLimit));
         customerDtoToPurchaser.setClosingDateAt(date);
         nameOrder.setText(customerDtoToPurchaser.getCustomerName());
+        
+        
        
     }//GEN-LAST:event_btnAddCustomerActionPerformed
 
@@ -695,7 +693,16 @@ public class RegisterPurchaserOrderForm extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_tableCustomerToPurchaserKeyReleased
 
     private void btnSavePurchaserOrderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSavePurchaserOrderActionPerformed
-
+        List<ProductItemDTO> itens = productDialog.getProductItensDTOs();
+        System.out.println("********************************");
+        for (ProductItemDTO iten : itens) {
+                System.out.println("ID: " + iten.getProductId());
+                System.out.println("QTD: " + iten.getQtd());
+                System.out.println("Preço Unidade: " + iten.getUnitPrice());
+                System.out.println("-------------------------");
+        }
+    
+        System.out.println("********************************");
     }//GEN-LAST:event_btnSavePurchaserOrderActionPerformed
 
     private void btnCancelPurchaserOrderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelPurchaserOrderActionPerformed
@@ -706,6 +713,10 @@ public class RegisterPurchaserOrderForm extends javax.swing.JInternalFrame {
 
     private void btnAddProductActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddProductActionPerformed
         // TODO add your handling code here:
+//        productDialog = new ProductDialog(null, closable).show();
+//        productDialog = new ProductDialog(parent, closable)
+        productDialog.show();
+        
     }//GEN-LAST:event_btnAddProductActionPerformed
 
 
