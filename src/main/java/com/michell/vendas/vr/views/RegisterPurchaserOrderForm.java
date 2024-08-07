@@ -48,59 +48,8 @@ public class RegisterPurchaserOrderForm extends javax.swing.JInternalFrame {
     public RegisterPurchaserOrderForm() {
         initComponents();
         loadCustomers(); 
-         
     }
     
-//      public void clearFields(){
-//        inputCode.setText(null);
-//        inputDescription.setText(null);
-//        inputPrice.setText(null);
-//        tableProduct.clearSelection();
-//    }
-//    
-//    public void setInitNewFields(){
-//        inputCode.setEnabled(false);
-//        inputDescription.setEnabled(true);
-//        inputPrice.setEnabled(true);      
-//        inputSearchProduct.setEnabled(true);
-//
-//        btnDeleteProduct.setEnabled(false);
-//        btnCancelProduct.setEnabled(true);
-//        btnUpdateProduct.setEnabled(false);
-//        btnSaveProduct.setEnabled(true);
-//        btnNewProduct.setEnabled(false);
-//    }
-//    
-//    public void setInitSaveFields(){
-//        inputCode.setEnabled(false);
-//        inputDescription.setEnabled(false);
-//        inputPrice.setEnabled(false);
-//        inputSearchProduct.setEnabled(false);
-//
-//        btnDeleteProduct.setEnabled(false);
-//        btnCancelProduct.setEnabled(false);
-//        btnUpdateProduct.setEnabled(false);
-//        btnSaveProduct.setEnabled(false);
-//        btnNewProduct.setEnabled(true);  
-//        
-//    }
-//    
-//    public void setInitEditFields(){
-//        inputCode.setEnabled(false);
-//        inputDescription.setEnabled(true);
-//        inputPrice.setEnabled(true);
-//        inputSearchProduct.setEnabled(true);
-//        
-//        btnDeleteProduct.setEnabled(true);
-//        btnCancelProduct.setEnabled(true);
-//        btnUpdateProduct.setEnabled(true);
-//        btnSaveProduct.setEnabled(false);
-//        btnNewProduct.setEnabled(false);
-//    }
-     
-//    public void setInitCancelFields(){
-//         setInitSaveFields();
-//    }
     
   public void loadCustomers(){
         RestTemplate restTemplate = new RestTemplate();
@@ -124,29 +73,9 @@ public class RegisterPurchaserOrderForm extends javax.swing.JInternalFrame {
                     tableModelCustomers.addRow(new Object[]{id, customerName,purchaseLimit,formattedDate});
                 }
         }
-        // imprimir no console
-        if (customersDto != null) {
-            System.out.println("Success: " + customersDto.getMessage().isSuccess());
-            System.out.println("Details: " + customersDto.getMessage().getDetails());
-            for (CustomerDTO customer : customersDto.getCustomers()) {
-                System.out.println("Customer ID: " + customer.getId());
-                System.out.println("Customer Name: " + customer.getCustomerName());
-                System.out.println("Purchase Limit: " + customer.getPurchaseLimit());
-                System.out.println("Closing Date: " + customer.getClosingDateAt());
-            }
-        }
+      
     }
-//      
-//    private String extractErrorMessage(String responseBody) {
-//        ObjectMapper objectMapper = new ObjectMapper();
-//        try {
-//            JsonNode root = objectMapper.readTree(responseBody);
-//            JsonNode messageNode = root.path("message");
-//            return messageNode.path("details").asText();
-//        } catch (IOException e) {
-//            return "Erro ao processar mensagem de erro: " + e.getMessage();
-//        }
-//    } 
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -654,9 +583,6 @@ public class RegisterPurchaserOrderForm extends javax.swing.JInternalFrame {
     private void btnCancelAddCustomerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelAddCustomerActionPerformed
         btnCancelAddCustomer.setEnabled(false);
         btnAddCustomer.setEnabled(false);
-//        tableCustomerToPurchaser.setRowSelectionAllowed(true);
-//        tableCustomerToPurchaser.setColumnSelectionAllowed(true);
-//        tableCustomerToPurchaser.setCellSelectionEnabled(true);
         tableCustomerToPurchaser.setEnabled(true);
         purchaseLimitText.setText("R$ 000,00");
         inputCustomerNameToPurchaser.setText("XXXXXXXXXXXXXX");
@@ -679,15 +605,11 @@ public class RegisterPurchaserOrderForm extends javax.swing.JInternalFrame {
         btnCancelPurchaserOrder.setEnabled(true);
         btnAddProduct.setEnabled(true);
         
-        //        fazer utlitite
+        //Fazer utlitite
         String purchaseLimit = purchaseLimitText.getText().replaceAll("\\s+", "").replace("R$", "");  
         
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         LocalDate date = LocalDate.parse(closingDateText.getText(), formatter);
-      
-         
-
-       
           
         customerDtoToPurchaser.setId(Long.parseLong(codeText.getText()));
         customerDtoToPurchaser.setCustomerName(inputCustomerNameToPurchaser.getText());
@@ -698,33 +620,7 @@ public class RegisterPurchaserOrderForm extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_btnAddCustomerActionPerformed
 
     private void tableCustomerMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableCustomerMouseClicked
-        // TODO add your handling code here:
-//        DefaultTableModel model = (DefaultTableModel)tableCustomer.getModel();
-//        int selectedRowIndex = tableCustomer.getSelectedRow();
-//        int qtdRows = tableCustomer.getSelectedRowCount();
-//
-//        System.out.println("selectedRowIndex:" + selectedRowIndex);
-//        System.out.println("qtdRows:" + qtdRows);
-//
-//        if(qtdRows == 1){
-//            setInitEditFields();
-//            inputCode.setText(model.getValueAt(selectedRowIndex, 0).toString());
-//            inputCustomerName.setText(model.getValueAt(selectedRowIndex, 1).toString());
-//            inputPurchaseLimit.setText(model.getValueAt(selectedRowIndex, 2).toString());
-//            String inputClosingDateAmerican = model.getValueAt(selectedRowIndex, 3).toString();
-//            try {
-//                SimpleDateFormat inputFormat = new SimpleDateFormat("dd/MM/yyyy");
-//                Date date = inputFormat.parse(inputClosingDateAmerican);
-//                inputClosingDate.setDate(date);
-//                //                    inputClosingDate.setDateFormatString("dd/MM/yyyy");
-//
-//            } catch (ParseException ex) {
-//                ex.printStackTrace();
-//            }
-//        }if(qtdRows > 1){
-//            JOptionPane.showMessageDialog(this, "Por favor selecione apenas um registro");
-//
-//        }
+
     }//GEN-LAST:event_tableCustomerMouseClicked
 
     private void tableCustomerKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tableCustomerKeyPressed
@@ -733,31 +629,7 @@ public class RegisterPurchaserOrderForm extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_tableCustomerKeyPressed
 
     private void tableCustomerKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tableCustomerKeyReleased
-//        System.out.println("aqui");
-//        DefaultTableModel model = (DefaultTableModel)tableCustomer.getModel();
-//        int selectedRowIndex = tableCustomer.getSelectedRow();
-//        int qtdRows = tableCustomer.getSelectedRowCount();
-//        System.out.println("selectedRowIndex:" + selectedRowIndex);
-//        System.out.println("qtdRows:" + qtdRows);
-//        if(qtdRows == 1){
-//            setInitEditFields();
-//            inputCode.setText(model.getValueAt(selectedRowIndex, 0).toString());
-//            inputCustomerName.setText(model.getValueAt(selectedRowIndex, 1).toString());
-//            inputPurchaseLimit.setText(model.getValueAt(selectedRowIndex, 2).toString());
-//            String inputClosingDateAmerican = model.getValueAt(selectedRowIndex, 3).toString();
-//            try {
-//                SimpleDateFormat inputFormat = new SimpleDateFormat("dd/MM/yyyy");
-//                Date date = inputFormat.parse(inputClosingDateAmerican);
-//                inputClosingDate.setDate(date);
-//                //                    inputClosingDate.setDateFormatString("dd/MM/yyyy");
-//
-//            } catch (ParseException ex) {
-//                ex.printStackTrace();
-//            }
-//        }if(qtdRows > 1){
-//            JOptionPane.showMessageDialog(this, "Por favor selecione apenas um registro");
-//
-//        }
+
     }//GEN-LAST:event_tableCustomerKeyReleased
 
     private void tableCustomer2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableCustomer2MouseClicked
@@ -823,41 +695,6 @@ public class RegisterPurchaserOrderForm extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_tableCustomerToPurchaserKeyReleased
 
     private void btnSavePurchaserOrderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSavePurchaserOrderActionPerformed
-
-//        RestTemplate restTemplate = new RestTemplate();
-//
-//        Date date = inputClosingDate.getDate();
-//        Instant instant = date.toInstant();
-//        LocalDate closingDateAt = instant.atZone(ZoneId.systemDefault()).toLocalDate();
-//
-//        CustomerDTO customersDTO = new CustomerDTO();
-//        customersDTO.setCustomerName(inputCustomerName.getText());
-//        customersDTO.setPurchaseLimit(Double.parseDouble(inputPurchaseLimit.getText()));
-//        customersDTO.setClosingDateAt(closingDateAt);
-//
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
-//        HttpEntity<CustomerDTO> request = new HttpEntity<>(customersDTO, headers);
-//        try {
-//
-//            ResponseEntity<ResponseDTO> response = restTemplate.exchange(
-//                CUSTOMER_URL,
-//                HttpMethod.POST,
-//                request,
-//                ResponseDTO.class
-//            );
-//
-//            JOptionPane.showMessageDialog(this, response.getBody().getMessage().getDetails());
-//            loadCustomers();
-//            setInitSaveFields();
-//            clearFields();
-//
-//        } catch (HttpServerErrorException e) {
-//            String errorMessage = extractErrorMessage(e.getResponseBodyAsString());
-//            JOptionPane.showMessageDialog(this, errorMessage, "Aviso de cliente já existente", JOptionPane.WARNING_MESSAGE);
-//        } catch (HeadlessException | RestClientException e) {
-//            JOptionPane.showMessageDialog(this, "Erro inesperado: " + e.getMessage());
-//        }
 
     }//GEN-LAST:event_btnSavePurchaserOrderActionPerformed
 
