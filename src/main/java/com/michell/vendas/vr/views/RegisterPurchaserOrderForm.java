@@ -10,6 +10,7 @@ import com.michell.vendas.vr.dtos.ProductDTO;
 import com.michell.vendas.vr.dtos.ProductItemDTO;
 import com.michell.vendas.vr.dtos.PurchaseOrderDTO;
 import com.michell.vendas.vr.dtos.RetrieveAllCustomersDTO;
+import com.michell.vendas.vr.dtos.RetrieveAllProductsDTO;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -26,6 +27,7 @@ import org.springframework.web.client.RestTemplate;
  */
 public class RegisterPurchaserOrderForm extends javax.swing.JInternalFrame {
     
+    private static final String PRODUCT_URL = "http://localhost:8080/product/";
     private static final String CUSTOMER_URL = "http://localhost:8080/customer/";
     private static final String PURCHASER_ORDER_URL = "http://localhost:8080/purchaserOrder/";
     
@@ -43,6 +45,7 @@ public class RegisterPurchaserOrderForm extends javax.swing.JInternalFrame {
     public RegisterPurchaserOrderForm() {
         initComponents();
         loadCustomers(); 
+        loadProductsSelected();
     }
     
     
@@ -70,6 +73,19 @@ public class RegisterPurchaserOrderForm extends javax.swing.JInternalFrame {
         }
       
     }
+  
+  public void loadProductsSelected(){
+        List<ProductItemDTO> itens = productDialog.getProductItensDTOs();
+        DefaultTableModel tableModelCustomers = (DefaultTableModel) tableProductSelected.getModel();
+        tableModelCustomers.setRowCount(0); //limpa os dados
+        for (ProductItemDTO item : itens) {                    
+            Long id = item.getProductId();
+            String description = item.getDescription();
+            Double price = item.getUnitPrice();
+            Integer qtd = item.getQtd();
+            tableModelCustomers.addRow(new Object[]{id, description, price, qtd});
+        }
+  }
 
 
     /**
@@ -94,7 +110,7 @@ public class RegisterPurchaserOrderForm extends javax.swing.JInternalFrame {
         tableCustomerToPurchaser = new javax.swing.JTable();
         jPanel7 = new javax.swing.JPanel();
         jScrollPane3 = new javax.swing.JScrollPane();
-        tableCustomer2 = new javax.swing.JTable();
+        tableProductSelected = new javax.swing.JTable();
         jPanel1 = new javax.swing.JPanel();
         inputCustomerNameToPurchaser = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
@@ -305,16 +321,16 @@ public class RegisterPurchaserOrderForm extends javax.swing.JInternalFrame {
 
         jPanel7.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
-        tableCustomer2.setModel(new javax.swing.table.DefaultTableModel(
+        tableProductSelected.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
             new String [] {
-                "Código", "Nome do cliente", "Limite de compra", "Data de fechamento"
+                "Código", "Descrição", "Preço", "Qtd"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Long.class, java.lang.String.class, java.lang.Double.class, java.lang.Object.class
+                java.lang.Long.class, java.lang.String.class, java.lang.Double.class, java.lang.Integer.class
             };
             boolean[] canEdit = new boolean [] {
                 false, false, false, false
@@ -328,20 +344,31 @@ public class RegisterPurchaserOrderForm extends javax.swing.JInternalFrame {
                 return canEdit [columnIndex];
             }
         });
-        tableCustomer2.addMouseListener(new java.awt.event.MouseAdapter() {
+        tableProductSelected.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                tableCustomer2MouseClicked(evt);
+                tableProductSelectedMouseClicked(evt);
             }
         });
-        tableCustomer2.addKeyListener(new java.awt.event.KeyAdapter() {
+        tableProductSelected.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
-                tableCustomer2KeyPressed(evt);
+                tableProductSelectedKeyPressed(evt);
             }
             public void keyReleased(java.awt.event.KeyEvent evt) {
-                tableCustomer2KeyReleased(evt);
+                tableProductSelectedKeyReleased(evt);
             }
         });
-        jScrollPane3.setViewportView(tableCustomer2);
+        jScrollPane3.setViewportView(tableProductSelected);
+        if (tableProductSelected.getColumnModel().getColumnCount() > 0) {
+            tableProductSelected.getColumnModel().getColumn(0).setMinWidth(80);
+            tableProductSelected.getColumnModel().getColumn(0).setPreferredWidth(80);
+            tableProductSelected.getColumnModel().getColumn(0).setMaxWidth(80);
+            tableProductSelected.getColumnModel().getColumn(2).setMinWidth(150);
+            tableProductSelected.getColumnModel().getColumn(2).setPreferredWidth(150);
+            tableProductSelected.getColumnModel().getColumn(2).setMaxWidth(150);
+            tableProductSelected.getColumnModel().getColumn(3).setMinWidth(80);
+            tableProductSelected.getColumnModel().getColumn(3).setPreferredWidth(80);
+            tableProductSelected.getColumnModel().getColumn(3).setMaxWidth(80);
+        }
 
         javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
         jPanel7.setLayout(jPanel7Layout);
@@ -630,17 +657,17 @@ public class RegisterPurchaserOrderForm extends javax.swing.JInternalFrame {
 
     }//GEN-LAST:event_tableCustomerKeyReleased
 
-    private void tableCustomer2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableCustomer2MouseClicked
+    private void tableProductSelectedMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableProductSelectedMouseClicked
         // TODO add your handling code here:
-    }//GEN-LAST:event_tableCustomer2MouseClicked
+    }//GEN-LAST:event_tableProductSelectedMouseClicked
 
-    private void tableCustomer2KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tableCustomer2KeyPressed
+    private void tableProductSelectedKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tableProductSelectedKeyPressed
         // TODO add your handling code here:
-    }//GEN-LAST:event_tableCustomer2KeyPressed
+    }//GEN-LAST:event_tableProductSelectedKeyPressed
 
-    private void tableCustomer2KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tableCustomer2KeyReleased
+    private void tableProductSelectedKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tableProductSelectedKeyReleased
         // TODO add your handling code here:
-    }//GEN-LAST:event_tableCustomer2KeyReleased
+    }//GEN-LAST:event_tableProductSelectedKeyReleased
 
     private void inputCustomerNameToPurchaserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_inputCustomerNameToPurchaserActionPerformed
         // TODO add your handling code here:
@@ -703,6 +730,7 @@ public class RegisterPurchaserOrderForm extends javax.swing.JInternalFrame {
         }
     
         System.out.println("********************************");
+        loadProductsSelected();
     }//GEN-LAST:event_btnSavePurchaserOrderActionPerformed
 
     private void btnCancelPurchaserOrderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelPurchaserOrderActionPerformed
@@ -748,7 +776,7 @@ public class RegisterPurchaserOrderForm extends javax.swing.JInternalFrame {
     private javax.swing.JLabel purchaseLimitText;
     private javax.swing.JLabel purchaseLimitTextToOrder;
     private javax.swing.JTable tableCustomer;
-    private javax.swing.JTable tableCustomer2;
     private javax.swing.JTable tableCustomerToPurchaser;
+    private javax.swing.JTable tableProductSelected;
     // End of variables declaration//GEN-END:variables
 }

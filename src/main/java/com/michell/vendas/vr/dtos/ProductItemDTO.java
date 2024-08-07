@@ -17,7 +17,7 @@ import lombok.Setter;
 @Setter
 @Generated
 @NoArgsConstructor
-public class ProductItemDTO {
+public class ProductItemDTO extends ProductDTO{
     
     private Long productId;
 

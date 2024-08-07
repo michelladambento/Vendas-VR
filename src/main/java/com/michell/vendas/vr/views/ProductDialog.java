@@ -230,7 +230,8 @@ public class ProductDialog extends javax.swing.JDialog {
             Boolean isSelected = (Boolean) tableProductDialog.getValueAt(row, 0);
             if (isSelected) {
                 ProductItemDTO item = new ProductItemDTO();
-                item.setProductId(Long.parseLong(model.getValueAt(row, 1).toString()));               
+                item.setProductId(Long.parseLong(model.getValueAt(row, 1).toString())); 
+                item.setDescription(model.getValueAt(row, 2).toString());
                 item.setUnitPrice(Double.parseDouble(model.getValueAt(row, 3).toString()));
                 item.setQtd(Integer.parseInt(model.getValueAt(row, 4).toString()));
                 productItensDTOs.add(item);
@@ -239,7 +240,6 @@ public class ProductDialog extends javax.swing.JDialog {
             }
         }
         dispose();
-        
     }//GEN-LAST:event_btnAddProductsActionPerformed
 
     /**
