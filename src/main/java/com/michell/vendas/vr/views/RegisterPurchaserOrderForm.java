@@ -10,7 +10,6 @@ import com.michell.vendas.vr.dtos.ProductDTO;
 import com.michell.vendas.vr.dtos.ProductItemDTO;
 import com.michell.vendas.vr.dtos.PurchaseOrderDTO;
 import com.michell.vendas.vr.dtos.RetrieveAllCustomersDTO;
-import com.michell.vendas.vr.dtos.RetrieveAllProductsDTO;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -45,8 +44,11 @@ public class RegisterPurchaserOrderForm extends javax.swing.JInternalFrame {
     public RegisterPurchaserOrderForm() {
         initComponents();
         loadCustomers(); 
-        loadProductsSelected();
+        loadProductsSelected();        
     }
+    
+    
+   
     
     
   public void loadCustomers(){
@@ -74,7 +76,7 @@ public class RegisterPurchaserOrderForm extends javax.swing.JInternalFrame {
       
     }
   
-  public void loadProductsSelected(){
+  public void loadProductsSelected(){      
         List<ProductItemDTO> itens = productDialog.getProductItensDTOs();
         DefaultTableModel tableModelCustomers = (DefaultTableModel) tableProductSelected.getModel();
         tableModelCustomers.setRowCount(0); //limpa os dados
@@ -86,6 +88,7 @@ public class RegisterPurchaserOrderForm extends javax.swing.JInternalFrame {
             tableModelCustomers.addRow(new Object[]{id, description, price, qtd});
         }
   }
+   
 
 
     /**
@@ -126,6 +129,7 @@ public class RegisterPurchaserOrderForm extends javax.swing.JInternalFrame {
         btnSavePurchaserOrder = new javax.swing.JButton();
         btnCancelPurchaserOrder = new javax.swing.JButton();
         btnAddProduct = new javax.swing.JButton();
+        btnRefresh = new javax.swing.JButton();
 
         jPanel5.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
@@ -522,6 +526,15 @@ public class RegisterPurchaserOrderForm extends javax.swing.JInternalFrame {
             }
         });
 
+        btnRefresh.setFont(new java.awt.Font("Liberation Sans", 1, 15)); // NOI18N
+        btnRefresh.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/arrow_refresh.png"))); // NOI18N
+        btnRefresh.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnRefresh.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRefreshActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -547,6 +560,8 @@ public class RegisterPurchaserOrderForm extends javax.swing.JInternalFrame {
                                 .addComponent(jPanel7, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                                     .addComponent(btnAddProduct, javax.swing.GroupLayout.PREFERRED_SIZE, 201, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGap(18, 18, 18)
+                                    .addComponent(btnRefresh, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                     .addComponent(purchaseLimitTextToOrder, javax.swing.GroupLayout.PREFERRED_SIZE, 226, javax.swing.GroupLayout.PREFERRED_SIZE)))
                             .addGroup(layout.createSequentialGroup()
@@ -572,7 +587,9 @@ public class RegisterPurchaserOrderForm extends javax.swing.JInternalFrame {
                                 .addGap(53, 53, 53)
                                 .addComponent(nameOrder)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(btnAddProduct, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(btnAddProduct, javax.swing.GroupLayout.DEFAULT_SIZE, 45, Short.MAX_VALUE)
+                                    .addComponent(btnRefresh, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(6, 6, 6)
                                 .addComponent(btnSavePurchaserOrder, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -720,17 +737,17 @@ public class RegisterPurchaserOrderForm extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_tableCustomerToPurchaserKeyReleased
 
     private void btnSavePurchaserOrderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSavePurchaserOrderActionPerformed
-        List<ProductItemDTO> itens = productDialog.getProductItensDTOs();
-        System.out.println("********************************");
-        for (ProductItemDTO iten : itens) {
-                System.out.println("ID: " + iten.getProductId());
-                System.out.println("QTD: " + iten.getQtd());
-                System.out.println("Preço Unidade: " + iten.getUnitPrice());
-                System.out.println("-------------------------");
-        }
-    
-        System.out.println("********************************");
-        loadProductsSelected();
+//        List<ProductItemDTO> itens = productDialog.getProductItensDTOs();
+//        System.out.println("********************************");
+//        for (ProductItemDTO iten : itens) {
+//                System.out.println("ID: " + iten.getProductId());
+//                System.out.println("QTD: " + iten.getQtd());
+//                System.out.println("Preço Unidade: " + iten.getUnitPrice());
+//                System.out.println("-------------------------");
+//        }
+//    
+//        System.out.println("********************************");       
+//        loadProductsSelected();
     }//GEN-LAST:event_btnSavePurchaserOrderActionPerformed
 
     private void btnCancelPurchaserOrderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelPurchaserOrderActionPerformed
@@ -747,12 +764,18 @@ public class RegisterPurchaserOrderForm extends javax.swing.JInternalFrame {
         
     }//GEN-LAST:event_btnAddProductActionPerformed
 
+    private void btnRefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRefreshActionPerformed
+        // TODO add your handling code here:
+        loadProductsSelected();
+    }//GEN-LAST:event_btnRefreshActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAddCustomer;
     private javax.swing.JButton btnAddProduct;
     private javax.swing.JButton btnCancelAddCustomer;
     private javax.swing.JButton btnCancelPurchaserOrder;
+    private javax.swing.JButton btnRefresh;
     private javax.swing.JButton btnSavePurchaserOrder;
     private javax.swing.JLabel closingDateText;
     private javax.swing.JLabel codeText;
@@ -779,4 +802,6 @@ public class RegisterPurchaserOrderForm extends javax.swing.JInternalFrame {
     private javax.swing.JTable tableCustomerToPurchaser;
     private javax.swing.JTable tableProductSelected;
     // End of variables declaration//GEN-END:variables
+
+ 
 }
