@@ -140,9 +140,6 @@ public class VendasMainForm extends javax.swing.JFrame {
     private void menuClientActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuClientActionPerformed
         // TODO add your handling code here:
         RegisterCustomerForm formCustomer = new RegisterCustomerForm();
-//        desktopPane.add(formCustomer);
-//        formCustomer.setVisible(rootPaneCheckingEnabled);
-//        PositionForm positionForm = new PositionForm();
         positionForm.openForm(formCustomer  , desktopPane);
     
     }//GEN-LAST:event_menuClientActionPerformed

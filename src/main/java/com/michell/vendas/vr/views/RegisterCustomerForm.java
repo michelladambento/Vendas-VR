@@ -565,8 +565,6 @@ public class RegisterCustomerForm extends javax.swing.JInternalFrame {
                     SimpleDateFormat inputFormat = new SimpleDateFormat("dd/MM/yyyy");
                     Date date = inputFormat.parse(inputClosingDateAmerican); 
                     inputClosingDate.setDate(date);
-//                    inputClosingDate.setDateFormatString("dd/MM/yyyy");
-                    
             } catch (ParseException ex) {
                   ex.printStackTrace();
             }
@@ -578,7 +576,6 @@ public class RegisterCustomerForm extends javax.swing.JInternalFrame {
 
     private void btnUpdateCustomerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateCustomerActionPerformed
         // TODO add your handling code here:
-       
         int selectedRowIndex = tableCustomer.getSelectedRow();
         int qtdRows = tableCustomer.getSelectedRowCount();
         if(qtdRows == 1){
@@ -628,7 +625,6 @@ public class RegisterCustomerForm extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_btnUpdateCustomerActionPerformed
 
     private void btnDeleteCustomerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteCustomerActionPerformed
-//        clearFields();
         DefaultTableModel model = (DefaultTableModel)tableCustomer.getModel();
         int selectedRowIndex = tableCustomer.getSelectedRow();
         int qtdRows = tableCustomer.getSelectedRowCount();
@@ -650,7 +646,6 @@ public class RegisterCustomerForm extends javax.swing.JInternalFrame {
                 String urlDelete = CUSTOMER_URL + customerId + "/";
                 
                   try {
-                        // Enviar a solicitação DELETE e obter a resposta
                         ResponseEntity<ResponseDTO> responseEntity = restTemplate.exchange(
                             urlDelete,
                             HttpMethod.DELETE,
@@ -680,7 +675,6 @@ public class RegisterCustomerForm extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_tableCustomerKeyPressed
 
     private void tableCustomerKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tableCustomerKeyReleased
-        System.out.println("aqui");
         DefaultTableModel model = (DefaultTableModel)tableCustomer.getModel();
         int selectedRowIndex = tableCustomer.getSelectedRow();
         int qtdRows = tableCustomer.getSelectedRowCount(); 
@@ -696,14 +690,11 @@ public class RegisterCustomerForm extends javax.swing.JInternalFrame {
                     SimpleDateFormat inputFormat = new SimpleDateFormat("dd/MM/yyyy");
                     Date date = inputFormat.parse(inputClosingDateAmerican); 
                     inputClosingDate.setDate(date);
-//                    inputClosingDate.setDateFormatString("dd/MM/yyyy");
-                    
             } catch (ParseException ex) {
                   ex.printStackTrace();
             }
         }if(qtdRows > 1){
             JOptionPane.showMessageDialog(this, "Por favor selecione apenas um registro");
-            
         }
     }//GEN-LAST:event_tableCustomerKeyReleased
 

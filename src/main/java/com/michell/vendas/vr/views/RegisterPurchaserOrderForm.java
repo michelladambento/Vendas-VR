@@ -16,12 +16,9 @@ import com.michell.vendas.vr.dtos.RetrieveAllCustomersDTO;
 import java.awt.HeadlessException;
 import java.io.IOException;
 import java.text.DecimalFormat;
-import java.time.Instant;
 
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
@@ -718,7 +715,6 @@ public class RegisterPurchaserOrderForm extends javax.swing.JInternalFrame {
         if(qtdRows == 1){
             btnAddCustomer.setEnabled(true);
             btnCancelAddCustomer.setEnabled(true);
-//            setInitEditFields();            
             codeText.setText(model.getValueAt(selectedRowIndex, 0).toString());
             inputCustomerNameToPurchaser.setText(model.getValueAt(selectedRowIndex, 1).toString());
             purchaseLimitText.setText("R$ " + model.getValueAt(selectedRowIndex, 2).toString());
@@ -738,12 +734,9 @@ public class RegisterPurchaserOrderForm extends javax.swing.JInternalFrame {
          DefaultTableModel model = (DefaultTableModel)tableCustomerToPurchaser.getModel();
         int selectedRowIndex = tableCustomerToPurchaser.getSelectedRow();
         int qtdRows = tableCustomerToPurchaser.getSelectedRowCount();  
-        
-        
         if(qtdRows == 1){
             btnAddCustomer.setEnabled(true);
             btnCancelAddCustomer.setEnabled(true);
-//            setInitEditFields();            
             codeText.setText(model.getValueAt(selectedRowIndex, 0).toString());
             inputCustomerNameToPurchaser.setText(model.getValueAt(selectedRowIndex, 1).toString());
             purchaseLimitText.setText("R$ " + model.getValueAt(selectedRowIndex, 2).toString());
@@ -776,7 +769,7 @@ public class RegisterPurchaserOrderForm extends javax.swing.JInternalFrame {
                 ResponseDTO.class
             ); 
 
-            JOptionPane.showMessageDialog(this, response.getBody().getMessage().getDetails());
+        JOptionPane.showMessageDialog(this, response.getBody().getMessage().getDetails());
         
         this.dispose(); 
         
@@ -803,17 +796,15 @@ public class RegisterPurchaserOrderForm extends javax.swing.JInternalFrame {
         }
     }
     private void btnCancelPurchaserOrderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelPurchaserOrderActionPerformed
-//        setInitCancelFields();
-//        clearFields();
+        // ajustar limpar campos ao invés de fazer nova instancia
+        this.dispose();         
+        RegisterPurchaserOrderForm newForm = new RegisterPurchaserOrderForm();
+        newForm.setVisible(true);
 
     }//GEN-LAST:event_btnCancelPurchaserOrderActionPerformed
 
     private void btnAddProductActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddProductActionPerformed
-        // TODO add your handling code here:
-//        productDialog = new ProductDialog(null, closable).show();
-//        productDialog = new ProductDialog(parent, closable)
         productDialog.show();
-        
     }//GEN-LAST:event_btnAddProductActionPerformed
 
     private void btnRefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRefreshActionPerformed
@@ -854,6 +845,5 @@ public class RegisterPurchaserOrderForm extends javax.swing.JInternalFrame {
     private javax.swing.JTable tableCustomerToPurchaser;
     private javax.swing.JTable tableProductSelected;
     // End of variables declaration//GEN-END:variables
-
  
 }

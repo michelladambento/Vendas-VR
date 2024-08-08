@@ -45,7 +45,7 @@ public class ProductDialog extends javax.swing.JDialog {
     }
     
     
-     public void loadProducts(){
+    public void loadProducts(){
         RestTemplate restTemplate = new RestTemplate();
 
         RetrieveAllProductsDTO productsDto = restTemplate.exchange(PRODUCT_URL,
@@ -228,38 +228,11 @@ public class ProductDialog extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void tableProductDialogMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableProductDialogMouseClicked
-//      DefaultTableModel model = (DefaultTableModel)tableProductDialog.getModel();
-//      
-////DefaultTableModel model = (DefaultTableModel)tableProductDialog.getModel();         
-//        int qtdRows = tableProductDialog.getSelectedRowCount();
-//        int selectedRowIndex = tableProductDialog.getSelectedRow();
-//       
-//         if(qtdRows == 1){
-//             ProductItemDTO item = new ProductItemDTO();
-//              item.setProductId(Long.parseLong(model.getValueAt(selectedRowIndex, 0).toString()));
-//              item.setQtd(5);
-//              item.setUnitPrice(Double.parseDouble(model.getValueAt(selectedRowIndex, 2).toString()));
-//              productItensDTOs.add(item);
-//
-//        }if(qtdRows > 1){
-//            JOptionPane.showMessageDialog(this, "Por favor selecione apenas um registro");
-//        }
 
     }//GEN-LAST:event_tableProductDialogMouseClicked
 
     private void tableProductDialogKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tableProductDialogKeyReleased
-//        // TODO add your handling code here:
-//        DefaultTableModel model = (DefaultTableModel)tableProductDialog.getModel();
-//        int selectedRowIndex = tableProductDialog.getSelectedRow();
-//        int qtdRows = tableProductDialog.getSelectedRowCount();
-//        if(qtdRows == 1){
-//            setInitEditFields();
-//            inputCode.setText(model.getValueAt(selectedRowIndex, 0).toString());
-//            inputDescription.setText(model.getValueAt(selectedRowIndex, 1).toString());
-//            inputPrice.setText(model.getValueAt(selectedRowIndex, 2).toString());
-//        }if(qtdRows > 1){
-//            JOptionPane.showMessageDialog(this, "Por favor selecione apenas um registro");
-//        }
+
     }//GEN-LAST:event_tableProductDialogKeyReleased
 
     private void btnAddProductsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddProductsActionPerformed
@@ -283,7 +256,7 @@ public class ProductDialog extends javax.swing.JDialog {
                             item.setQtd(Integer.parseInt(valueAtToString));
                             productItensDTOs.add(item);
                             tableProductDialog.setValueAt(false, row, 0);
-                            dispose();  //bug se tiver mais que selecionado vazio fecha o modal ajustar 
+                            dispose();  // TODO bug se tiver mais que selecionado vazio fecha o modal ajustar 
                      }else{
                         JOptionPane.showMessageDialog(this, "O campo Qtd está vazio!", "campo vazio", JOptionPane.WARNING_MESSAGE); 
                      }
@@ -292,8 +265,6 @@ public class ProductDialog extends javax.swing.JDialog {
                 }
             }
         }
-         
-         
     }//GEN-LAST:event_btnAddProductsActionPerformed
 
     /**
@@ -348,5 +319,4 @@ public class ProductDialog extends javax.swing.JDialog {
     private javax.swing.JTable tableProductDialog;
     // End of variables declaration//GEN-END:variables
 
-  
 }
