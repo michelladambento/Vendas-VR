@@ -777,9 +777,11 @@ public class RegisterPurchaserOrderForm extends javax.swing.JInternalFrame {
             ); 
 
             JOptionPane.showMessageDialog(this, response.getBody().getMessage().getDetails());
-//            loadCustomers();
-//            setInitSaveFields();
-//            clearFields();
+        
+        this.dispose(); 
+        
+        RegisterPurchaserOrderForm newForm = new RegisterPurchaserOrderForm();
+        newForm.setVisible(true);
             
         } catch (HttpServerErrorException e) {
             String errorMessage = extractErrorMessage(e.getResponseBodyAsString());
