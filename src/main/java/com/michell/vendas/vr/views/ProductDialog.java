@@ -9,6 +9,7 @@ import com.michell.vendas.vr.dtos.ProductItemDTO;
 import com.michell.vendas.vr.dtos.RetrieveAllProductsDTO;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
@@ -80,6 +81,7 @@ public class ProductDialog extends javax.swing.JDialog {
         jScrollPane1 = new javax.swing.JScrollPane();
         tableProductDialog = new javax.swing.JTable();
         btnAddProducts = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("VR-Software");
@@ -147,8 +149,9 @@ public class ProductDialog extends javax.swing.JDialog {
         });
         jScrollPane1.setViewportView(tableProductDialog);
         if (tableProductDialog.getColumnModel().getColumnCount() > 0) {
-            tableProductDialog.getColumnModel().getColumn(0).setPreferredWidth(20);
-            tableProductDialog.getColumnModel().getColumn(0).setMaxWidth(20);
+            tableProductDialog.getColumnModel().getColumn(0).setMinWidth(80);
+            tableProductDialog.getColumnModel().getColumn(0).setPreferredWidth(80);
+            tableProductDialog.getColumnModel().getColumn(0).setMaxWidth(80);
             tableProductDialog.getColumnModel().getColumn(1).setMinWidth(80);
             tableProductDialog.getColumnModel().getColumn(1).setPreferredWidth(80);
             tableProductDialog.getColumnModel().getColumn(1).setMaxWidth(80);
@@ -188,6 +191,10 @@ public class ProductDialog extends javax.swing.JDialog {
             }
         });
 
+        jLabel1.setFont(new java.awt.Font("Liberation Sans", 2, 14)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(102, 102, 102));
+        jLabel1.setText("* Atenção o campo Qtd é editável");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -196,7 +203,9 @@ public class ProductDialog extends javax.swing.JDialog {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addGap(16, 16, 16)
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 243, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(btnAddProducts, javax.swing.GroupLayout.PREFERRED_SIZE, 273, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
@@ -206,7 +215,9 @@ public class ProductDialog extends javax.swing.JDialog {
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnAddProducts, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(btnAddProducts, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel1))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 261, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -264,14 +275,25 @@ public class ProductDialog extends javax.swing.JDialog {
                 item.setProductId(Long.parseLong(model.getValueAt(row, 1).toString())); 
                 item.setDescription(model.getValueAt(row, 2).toString());
                 item.setUnitPrice(Double.parseDouble(model.getValueAt(row, 3).toString()));
-                item.setQtd(Integer.parseInt(model.getValueAt(row, 4).toString()));
-                productItensDTOs.add(item);
-                tableProductDialog.setValueAt(false, row, 0);
-                System.out.println("Row " + row + " has checkbox checked.");
+                
+                Object valueAt = model.getValueAt(row, 4);
+                if (valueAt != null){
+                    String valueAtToString = valueAt.toString();
+                     if (!valueAtToString.trim().isEmpty()) {
+                            item.setQtd(Integer.parseInt(valueAtToString));
+                            productItensDTOs.add(item);
+                            tableProductDialog.setValueAt(false, row, 0);
+                            dispose();  //bug se tiver mais que selecionado vazio fecha o modal ajustar 
+                     }else{
+                        JOptionPane.showMessageDialog(this, "O campo Qtd está vazio!", "campo vazio", JOptionPane.WARNING_MESSAGE); 
+                     }
+                }else{
+                    JOptionPane.showMessageDialog(this, "O campo Qtd está vazio!", "campo vazio", JOptionPane.WARNING_MESSAGE);
+                }
             }
         }
          
-         dispose();
+         
     }//GEN-LAST:event_btnAddProductsActionPerformed
 
     /**
@@ -318,6 +340,7 @@ public class ProductDialog extends javax.swing.JDialog {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAddProducts;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;

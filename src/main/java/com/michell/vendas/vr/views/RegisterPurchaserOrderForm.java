@@ -4,20 +4,34 @@
  */
 package com.michell.vendas.vr.views;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.michell.vendas.vr.dtos.CustomerDTO;
 import com.michell.vendas.vr.dtos.ProductDTO;
 
 import com.michell.vendas.vr.dtos.ProductItemDTO;
 import com.michell.vendas.vr.dtos.PurchaseOrderDTO;
+import com.michell.vendas.vr.dtos.ResponseDTO;
 import com.michell.vendas.vr.dtos.RetrieveAllCustomersDTO;
+import java.awt.HeadlessException;
+import java.io.IOException;
+import java.text.DecimalFormat;
+import java.time.Instant;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 /**
@@ -33,7 +47,7 @@ public class RegisterPurchaserOrderForm extends javax.swing.JInternalFrame {
     PurchaseOrderDTO purchaseOrderDTO = new PurchaseOrderDTO();
     CustomerDTO customerDtoToPurchaser = new CustomerDTO();
     ProductItemDTO productItemDTOToPurchaser = new ProductItemDTO();
-    ProductDTO ProductDTOToPurchaser = new ProductDTO();
+    ProductDTO productDTOToPurchaser = new ProductDTO();
     
     
     ProductDialog productDialog = new ProductDialog(null,closable);
@@ -80,13 +94,17 @@ public class RegisterPurchaserOrderForm extends javax.swing.JInternalFrame {
         List<ProductItemDTO> itens = productDialog.getProductItensDTOs();
         DefaultTableModel tableModelCustomers = (DefaultTableModel) tableProductSelected.getModel();
         tableModelCustomers.setRowCount(0); //limpa os dados
+        double total = 0.0;
+        DecimalFormat df = new DecimalFormat("#.##");
         for (ProductItemDTO item : itens) {                    
             Long id = item.getProductId();
             String description = item.getDescription();
             Double price = item.getUnitPrice();
             Integer qtd = item.getQtd();
             tableModelCustomers.addRow(new Object[]{id, description, price, qtd});
+            total += item.calculateTotalPrice();
         }
+        purchaseTotal.setText("R$ " + df.format(total));
   }
    
 
@@ -122,7 +140,7 @@ public class RegisterPurchaserOrderForm extends javax.swing.JInternalFrame {
         codeText = new javax.swing.JLabel();
         purchaseLimitText = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
-        purchaseLimitTextToOrder = new javax.swing.JLabel();
+        purchaseTotal = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
         nameOrder = new javax.swing.JLabel();
@@ -476,9 +494,9 @@ public class RegisterPurchaserOrderForm extends javax.swing.JInternalFrame {
                     .addContainerGap(123, Short.MAX_VALUE)))
         );
 
-        purchaseLimitTextToOrder.setFont(new java.awt.Font("Liberation Sans", 1, 40)); // NOI18N
-        purchaseLimitTextToOrder.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        purchaseLimitTextToOrder.setText("XXXXXX");
+        purchaseTotal.setFont(new java.awt.Font("Liberation Sans", 1, 40)); // NOI18N
+        purchaseTotal.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        purchaseTotal.setText("XXXXXX");
 
         jLabel3.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
         jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
@@ -558,12 +576,12 @@ public class RegisterPurchaserOrderForm extends javax.swing.JInternalFrame {
                                     .addGap(482, 482, 482)
                                     .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 271, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addComponent(jPanel7, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addGroup(layout.createSequentialGroup()
                                     .addComponent(btnAddProduct, javax.swing.GroupLayout.PREFERRED_SIZE, 201, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addGap(18, 18, 18)
                                     .addComponent(btnRefresh, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(purchaseLimitTextToOrder, javax.swing.GroupLayout.PREFERRED_SIZE, 226, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                    .addGap(18, 18, 18)
+                                    .addComponent(purchaseTotal, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(nameOrder, javax.swing.GroupLayout.PREFERRED_SIZE, 510, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -598,7 +616,7 @@ public class RegisterPurchaserOrderForm extends javax.swing.JInternalFrame {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(purchaseLimitTextToOrder)))
+                                .addComponent(purchaseTotal)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
@@ -737,19 +755,51 @@ public class RegisterPurchaserOrderForm extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_tableCustomerToPurchaserKeyReleased
 
     private void btnSavePurchaserOrderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSavePurchaserOrderActionPerformed
-//        List<ProductItemDTO> itens = productDialog.getProductItensDTOs();
-//        System.out.println("********************************");
-//        for (ProductItemDTO iten : itens) {
-//                System.out.println("ID: " + iten.getProductId());
-//                System.out.println("QTD: " + iten.getQtd());
-//                System.out.println("Preço Unidade: " + iten.getUnitPrice());
-//                System.out.println("-------------------------");
-//        }
-//    
-//        System.out.println("********************************");       
-//        loadProductsSelected();
-    }//GEN-LAST:event_btnSavePurchaserOrderActionPerformed
 
+        purchaseOrderDTO.setCustomerId(customerDtoToPurchaser.getId());
+        purchaseOrderDTO.setOrderDateAt(LocalDate.now());
+        String purchaseTotalToStr = purchaseTotal.getText().replaceAll("\\s+", "").replace("R$", "");
+        purchaseOrderDTO.setOrderTotal(Double.parseDouble(purchaseTotalToStr));            
+        purchaseOrderDTO.setProductItens(productDialog.getProductItensDTOs());
+
+        RestTemplate restTemplate = new RestTemplate();
+        
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
+        HttpEntity<PurchaseOrderDTO> request = new HttpEntity<>(purchaseOrderDTO, headers);
+        try {
+            
+                ResponseEntity<ResponseDTO> response = restTemplate.exchange(
+                PURCHASER_ORDER_URL,
+                HttpMethod.POST,
+                request,
+                ResponseDTO.class
+            ); 
+
+            JOptionPane.showMessageDialog(this, response.getBody().getMessage().getDetails());
+//            loadCustomers();
+//            setInitSaveFields();
+//            clearFields();
+            
+        } catch (HttpServerErrorException e) {
+            String errorMessage = extractErrorMessage(e.getResponseBodyAsString());
+            JOptionPane.showMessageDialog(this, errorMessage, "Aviso de Pedido de compra", JOptionPane.WARNING_MESSAGE);
+        } catch (HeadlessException | RestClientException e) {
+            JOptionPane.showMessageDialog(this, "Erro inesperado: " + e.getMessage());
+        }       
+  
+    }//GEN-LAST:event_btnSavePurchaserOrderActionPerformed
+    
+    private String extractErrorMessage(String responseBody) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            JsonNode root = objectMapper.readTree(responseBody);
+            JsonNode messageNode = root.path("message");
+            return messageNode.path("details").asText();
+        } catch (IOException e) {
+            return "Erro ao processar mensagem de erro: " + e.getMessage();
+        }
+    }
     private void btnCancelPurchaserOrderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelPurchaserOrderActionPerformed
 //        setInitCancelFields();
 //        clearFields();
@@ -797,7 +847,7 @@ public class RegisterPurchaserOrderForm extends javax.swing.JInternalFrame {
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JLabel nameOrder;
     private javax.swing.JLabel purchaseLimitText;
-    private javax.swing.JLabel purchaseLimitTextToOrder;
+    private javax.swing.JLabel purchaseTotal;
     private javax.swing.JTable tableCustomer;
     private javax.swing.JTable tableCustomerToPurchaser;
     private javax.swing.JTable tableProductSelected;

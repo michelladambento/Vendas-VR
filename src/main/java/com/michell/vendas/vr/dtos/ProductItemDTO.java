@@ -25,4 +25,11 @@ public class ProductItemDTO extends ProductDTO{
 
     private Double unitPrice;
     
+    public Double calculateTotalPrice() {
+        if (qtd == null || unitPrice == null) {
+            return 0.0; 
+        }
+        return qtd * unitPrice;
+    }
+    
 }
