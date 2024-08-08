@@ -758,7 +758,7 @@ public class RegisterPurchaserOrderForm extends javax.swing.JInternalFrame {
 
         purchaseOrderDTO.setCustomerId(customerDtoToPurchaser.getId());
         purchaseOrderDTO.setOrderDateAt(LocalDate.now());
-        String purchaseTotalToStr = purchaseTotal.getText().replaceAll("\\s+", "").replace("R$", "");
+        String purchaseTotalToStr = purchaseTotal.getText().replaceAll("\\s+", "").replace("R$", "").replace(",", ".");
         purchaseOrderDTO.setOrderTotal(Double.parseDouble(purchaseTotalToStr));            
         purchaseOrderDTO.setProductItens(productDialog.getProductItensDTOs());
 
