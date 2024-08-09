@@ -103,6 +103,37 @@ public class RegisterPurchaserOrderForm extends javax.swing.JInternalFrame {
         }
         purchaseTotal.setText("R$ " + df.format(total));
   }
+  
+  public void formInitial(){   
+      purchaseLimitText.setText("R$ 000,00");
+      inputCustomerNameToPurchaser.setText("XXXXXXXXXXXXXX");
+      closingDateText.setText("dd/MM/yyyy");
+      codeText.setText("xxxxxxxxxxxx");
+      btnCancelAddCustomer.setEnabled(false);
+      btnAddCustomer.setEnabled(false);
+      nameOrder.setText("XXXXXXXXX");
+      btnAddProduct.setEnabled(false);
+      purchaseTotal.setText("R$ 0");
+      btnSavePurchaserOrder.setEnabled(false);
+      btnCancelPurchaserOrder.setEnabled(false);
+      tableCustomerToPurchaser.setEnabled(true);
+      tableCustomerToPurchaser.setVisible(true);
+      tableCustomerToPurchaser.setOpaque(true);
+      tableProductSelected.setEnabled(false);
+      tableProductSelected.setVisible(false);
+      tableProductSelected.setOpaque(false);
+      btnRefresh.setEnabled(false);
+              
+      purchaseOrderDTO = new PurchaseOrderDTO();
+      customerDtoToPurchaser = new CustomerDTO();
+      productItemDTOToPurchaser = new ProductItemDTO();
+      productDTOToPurchaser = new ProductDTO();
+      productDialog = new ProductDialog(null,closable);
+      
+      loadCustomers(); 
+      loadProductsSelected();   
+      
+  }
    
 
 
@@ -543,6 +574,7 @@ public class RegisterPurchaserOrderForm extends javax.swing.JInternalFrame {
 
         btnRefresh.setFont(new java.awt.Font("Liberation Sans", 1, 15)); // NOI18N
         btnRefresh.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/arrow_refresh.png"))); // NOI18N
+        btnRefresh.setEnabled(false);
         btnRefresh.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btnRefresh.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -655,10 +687,15 @@ public class RegisterPurchaserOrderForm extends javax.swing.JInternalFrame {
         tableCustomerToPurchaser.repaint();
         tableCustomerToPurchaser.setVisible(false);
         tableCustomerToPurchaser.setOpaque(false);
+        
+        tableProductSelected.setEnabled(true);
+        tableProductSelected.setVisible(true);
+        tableProductSelected.setOpaque(true);
 
         btnSavePurchaserOrder.setEnabled(true);
         btnCancelPurchaserOrder.setEnabled(true);
         btnAddProduct.setEnabled(true);
+        btnRefresh.setEnabled(true);
         
         //Fazer utlitite
         String purchaseLimit = purchaseLimitText.getText().replaceAll("\\s+", "").replace("R$", "");  
@@ -670,12 +707,12 @@ public class RegisterPurchaserOrderForm extends javax.swing.JInternalFrame {
         customerDtoToPurchaser.setCustomerName(inputCustomerNameToPurchaser.getText());
         customerDtoToPurchaser.setPurchaseLimit(Double.parseDouble(purchaseLimit));
         customerDtoToPurchaser.setClosingDateAt(date);
-        nameOrder.setText(customerDtoToPurchaser.getCustomerName());
-        
+        nameOrder.setText(customerDtoToPurchaser.getCustomerName());      
         
        
     }//GEN-LAST:event_btnAddCustomerActionPerformed
 
+   
     private void tableCustomerMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableCustomerMouseClicked
 
     }//GEN-LAST:event_tableCustomerMouseClicked
@@ -771,10 +808,7 @@ public class RegisterPurchaserOrderForm extends javax.swing.JInternalFrame {
 
         JOptionPane.showMessageDialog(this, response.getBody().getMessage().getDetails());
         
-        this.dispose(); 
-        
-        RegisterPurchaserOrderForm newForm = new RegisterPurchaserOrderForm();
-        newForm.setVisible(true);
+        formInitial();
             
         } catch (HttpServerErrorException e) {
             String errorMessage = extractErrorMessage(e.getResponseBodyAsString());
@@ -797,10 +831,7 @@ public class RegisterPurchaserOrderForm extends javax.swing.JInternalFrame {
     }
     private void btnCancelPurchaserOrderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelPurchaserOrderActionPerformed
         // ajustar limpar campos ao invés de fazer nova instancia
-        this.dispose();         
-        RegisterPurchaserOrderForm newForm = new RegisterPurchaserOrderForm();
-        newForm.setVisible(true);
-
+       formInitial();
     }//GEN-LAST:event_btnCancelPurchaserOrderActionPerformed
 
     private void btnAddProductActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddProductActionPerformed
